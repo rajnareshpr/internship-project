@@ -1,0 +1,287 @@
+<div *ngIf="!realtorHome">
+    <section class="cover cover1-background">
+        <section id="nav section">
+
+            <nav class="navbar navbar-dark navbar-expand-lg py-1 pl-0 pr-0">
+                <div class="container">
+
+                    <div class="text-center container-fluid d-block d-lg-none">
+                        <button type="button" style="float: left;margin-top: 9px;" aria-expanded="false" (click)="isCollapsed = !isCollapsed" class="navbar-toggler navbar-toggler-left ml-2"><i class="fa fa-bars"></i></button>
+                        <a href="#">
+                            <img class="nav-logo-img" src="https://static-cdn. .com/ _logo.svg" alt="">
+                        </a>
+                    </div>
+                    <div class="d-none d-lg-block">
+                        <button type="button" aria-expanded="false" (click)="isCollapsed = !isCollapsed" class="navbar-toggler navbar-toggler-left ml-2"><i class="fa fa-bars"></i></button>
+                        <a href="#">
+                            <img class="nav-logo-img" src="https://static-cdn. .com/ _logo.svg" alt="">
+                        </a>
+                    </div>
+                    <div id="navbarSupportedContent" class="collapse navbar-collapse nav-mobile-container" [isAnimated]="true" [collapse]="isCollapsed">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a [routerLink]="['/']" fragment="home" class="nav-link text-uppercase font-weight-bold">HOME <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a [routerLink]="['/']" fragment="about" class="nav-link text-uppercase font-weight-bold">ABOUT</a>
+                            </li>
+                            <li class="nav-item">
+                                <a [routerLink]="['/']" fragment="why-choose" class="nav-link text-uppercase font-weight-bold">WHY CHOOSE US</a>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button" class="btn btn-danger btn-block login-btn" (click)="getRetrieveQuote(1)">RETRIEVE QUOTE</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </section>
+        <hr />
+        <div class="container" id="home">
+            <section id="row infoText" class="mt-lg-5">
+                <h1 class=" col-12 infoText">{{infotext}}</h1>
+                <h1 class=" col-12 infoText"> Purchase    Insurance</h1>
+            </section>
+
+
+            <div class="home card mb-sm-0 m-sm-3">
+                <div class="form-group row">
+                    <div class="col col mb-3 mb-sm-0">
+                        <input id="address-top" class="form-control" type="text" [(ngModel)]="address" #addresstext placeholder="Enter your address (Ex: 123 SE 128th Ave, Silver Springs FL)" />
+                        <div class="text-danger" *ngIf="showErrorMessage">Select an address</div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <button type="button" class="btn btn-danger btn-block getQuote" (click)="getQuote(1)">
+              GET YOUR
+              QUOTE
+            </button>
+                    </div>
+                </div>
+                <div>
+                    <a (click)='getRetrieveQuote(2)' class="save-quote-link">CONTINUE YOUR SAVED QUOTE</a>
+                </div>
+            </div>
+            <br />
+        </div>
+    </section>
+
+    <section class="Reason" id="about">
+        <div class="container">
+            <section id="ReasonTitle" class="pad-top">
+                <div _ngcontent-qgw-c101="" class="col text-center">
+                    <p class="about-text pb-4">
+                        About
+                        <img src="https://static-cdn. .com/ _logo_blue.svg" class="nav-logo-img" style="vertical-align:middle">
+                    </p>
+                </div>
+                <p class="text-center about-para" *ngIf="!isMobile">
+                    To end the confusion around    insurance costs, we created   to deliver a fast, easy,<br /> and convenient    insurance quote online. We offer    insurance policies developed<br /> using over 30+ years of    claims
+                    experience.
+                    <br /><br /><br />
+                </p>
+                <p class="about-para text-justify" *ngIf="isMobile">
+                    To end the confusion around    insurance costs, we created   to deliver a fast, easy, and convenient    insurance quote online. We offer    insurance policies developed using over 30+ years of    claims
+                    experience.
+                </p>
+
+            </section>
+        </div>
+    </section>
+
+    <section class="cover cover2-background" id="why-choose">
+        <div class="container" style="padding-bottom: 40px;padding-top: 40px;" (swipe)="onSwipe($event)">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="why-text">
+                        Why
+                        <img class="nav-logo-img" src="https://static-cdn. .com/ _logo.svg" alt="">
+                    </p>
+                </div>
+            </div>
+
+            <carousel [interval]="6000" [itemsPerSlide]="1" [(activeSlide)]="activeSlide" [isAnimated]="true">
+
+                <slide *ngIf="carousalItemsize==1">
+                    <div alt="first slide" class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">   risk is everywhere.<br /> 98% of all the counties in the US<br /> have experienced a   </div>
+                            <div class="col text-carousal-blocks">80% of properties, that <br /> should be covered by<br />    insurance, are not</div>
+                            <div class="col text-carousal-blocks">Both inland as<br /> well as coastal properties can,<br /> and do,    regularly</div>
+                        </div>
+                    </div>
+                </slide>
+
+                <slide *ngIf="carousalItemsize==1">
+                    <div alt="second slide" class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">Both the intensity and <br> frequency of    loss are <br> increasing every year</div>
+                            <div class="col text-carousal-blocks">  s happen <br> everywhere, including <br> places no one thought <br> would ever    </div>
+                            <div class="col text-carousal-blocks">   insurance is the <br> fastest, most complete way <br> to recover from a   </div>
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">   risk is everywhere.<br /> 98% of all the counties in the US<br /> have experienced a   </div>
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">80% of properties, that <br /> should be covered by<br />    insurance, are not</div>
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">Both inland as<br /> well as coastal properties can,<br /> and do,    regularly</div>
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">Both the intensity and <br> frequency of    loss are <br> increasing every year</div>
+
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">  s happen <br> everywhere, including <br> places no one thought <br> would ever    </div>
+                        </div>
+                    </div>
+                </slide>
+                <slide *ngIf="carousalItemsize!=1">
+                    <div class="text-carousal-pages">
+                        <div class="row text-carousal-padding">
+                            <div class="col text-carousal-blocks">   insurance is the <br> fastest, most complete way <br> to recover from a   </div>
+                        </div>
+                    </div>
+                </slide>
+
+            </carousel>
+        </div>
+    </section>
+
+    <div class="container mt-5 pad-bottom">
+        <div>
+            <h4 class="text-center mb-5 req-quote-header">Request Quote Now</h4>
+            <div class="form-group row">
+                <div class="col col mb-3 mb-sm-0">
+                    <input id="address-bottom" class="form-control" type="text" [(ngModel)]="address1" (ngModelChange)="checkInput()" #addresstext1 placeholder="Enter your address (Ex: 123 SE 128th Ave, Silver Springs FL)" />
+                    <div class="text-danger" *ngIf="showErrorMessage1">Select an address</div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-danger btn-block getQuote" (click)="getQuote(2)">
+            GET YOUR
+            QUOTE
+          </button>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-sm-block">
+            <div>Please enable location in your browser settings or select the nearest landmark from the address dropdown to view and drop pin on map</div>
+            <br>
+        </div>
+        <div class="d-block d-sm-none">
+            <div>Please enable location in your browser settings or select the nearest landmark from the address dropdown to view and drop pin on map</div>
+            <br>
+        </div>
+        <div class="d-none d-sm-block">
+            <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom" [disableDefaultUI]="false" [zoomControl]="true" (mapClick)="placeMarker($event)" style="z-index: 1000;height:300px">
+
+                <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)">
+                </agm-marker>
+            </agm-map>
+        </div>
+    </div>
+    <div class="d-block d-sm-none">
+        <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom" [disableDefaultUI]="false" [zoomControl]="true" (mapClick)="placeMarker($event)" style="z-index: 1000;height:300px">
+
+            <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)">
+            </agm-marker>
+        </agm-map>
+    </div>
+    <app-footer></app-footer>
+</div>
+
+<!-- Address Modal -->
+<ng-template #addressModal>
+    <div class="modal-header">
+        <button type="button" class="close pull-right" aria-label="Close" (click)="closeAddressModal()">
+                <span class="pull-right close-btn-padding" aria-hidden="true">&times;</span>
+                </button>
+    </div>
+
+    <div class="modal-body address-entry-modal">
+        <div class="row mb-2">We need to verify your mailing address. Please select from the following:</div>
+        <div *ngIf="formattedGoogleAddress">
+            <div class="row radio div-display">
+                <div class="pb-2">USPS format suggestion</div>
+                <input [ngModel]="addressType" type="radio" name="addressType" id="googleAddress" [value]="1" (change)="setAddressType(1)">
+                <label class="radio-label" for="googleAddress">
+                        {{formattedGoogleAddress.formatted_address}}
+                    </label>
+            </div>
+            <div class="row mb-2">OR</div>
+        </div>
+
+        <div class="row radio div-display">
+            <input [ngModel]="addressType" type="radio" name="addressType" id="userInputAddress" [value]="2" (change)="setAddressType(2)">
+            <label class="radio-label" for="userInputAddress">
+                    Fill your address details in the form below: 
+                </label>
+        </div>
+
+        <form [formGroup]="addressForm">
+            <div class="form-group row">
+                <label class="mb-0">
+                        <span class="d-inline-block">Address line 1<i class="fa fa-asterisk required"></i></span>
+                        </label>
+                <input formControlName="address1" class="form-control" type="text" id="address1" placeholder="Address Line 1" maxlength="30" />
+            </div>
+            <div class="form-group row">
+                <label class="mb-0">
+                        <span class="d-inline-block">Address line 2<i class="fa fa-asterisk required"></i></span>
+                        </label>
+                <input formControlName="address2" class="form-control" type="text" id="address2" placeholder="Address Line 2" maxlength="30" />
+            </div>
+            <div class="form-group row state-row">
+                <div class="col-12 col-sm-4 location-pad">
+                    <label class="mb-0">
+                    <span class="d-inline-block">City<i class="fa fa-asterisk required"></i></span>                        
+                  </label>
+                    <input formControlName="city" type="text" placeholder="Enter your City" class="form-control" appLetter>
+                    <app-error-message [form]="addressForm.get('city')" [field]="'city'"></app-error-message>
+                </div>
+                <div class="col-12 col-sm-4 location-pad">
+                    <label class="mb-0">
+                      <span class="d-inline-block">State<i class="fa fa-asterisk required"></i></span>                            
+                    </label>
+                    <input formControlName="state" [typeaheadMinLength]="0" (typeaheadNoResults)="stateNoResults($event)" [typeahead]="states" (typeaheadOnSelect)="noResults = false;" [typeaheadOptionsInScrollableView]="5" [typeaheadScrollable]="true" [typeaheadSelectFirstItem]="true"
+                        placeholder="Select your State" class="form-control" [ngClass]="{ 'is-invalid': noResults}">
+                    <div class="text-danger" *ngIf="noResults">Select a valid option</div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <label class="mb-0">
+                    Zip <span class="d-inline-block">Code<i class="fa fa-asterisk required"></i></span>                        
+                  </label>
+                    <input formControlName="zipCode" class="form-control" inputmode="decimal" type="text" id="zipCode" placeholder="Select Zip Code" appNumber/>
+                    <app-error-message [form]="addressForm.get('zipCode')" [field]="'zipCode'"></app-error-message>
+                </div>
+
+            </div>
+        </form>
+        <div class="row">
+            <button type="button" class="btn btn-danger btn-center" [disabled]="!addressType  || (addressType === 2 && !addressForm.valid) " (click)="submitAddress()">
+                    Proceed
+                  </button>
+        </div>
+    </div>
+</ng-template>
+<app-realtor-home *ngIf="realtorHome"></app-realtor-home>

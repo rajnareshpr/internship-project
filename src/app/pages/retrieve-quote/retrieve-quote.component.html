@@ -1,0 +1,90 @@
+
+    <div *ngIf="!IsMobile" class="d-none d-sm-block container-nomargin" style="background-color: #EEECF9">
+        <app-header [showBackBtn]="false"></app-header>
+        <div class="image-header-container">
+            <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+            <div class="image-header-centered-text">Continue Saved Quote</div>
+        </div>
+        <div class="container container-size overlay">
+            <div  class="p-4 mx-auto overlay-container">
+                <ng-container  *ngTemplateOutlet="pageOptions"></ng-container>
+            </div>
+        </div>
+        <app-footer></app-footer>
+    </div>
+
+    <div *ngIf="IsMobile" class="d-block d-sm-none">
+      <div class="fixed-top">
+        <app-header [showBackBtn]="false"></app-header>
+
+      </div>
+      
+        <div class="image-header-container">
+          <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+          <div class="image-header-centered-text" style="font-size: 4.8vw !important;">Continue Saved Quote</div>
+        </div>
+     
+      <div class="container margin-top">
+        <div class="">
+          <ng-container *ngTemplateOutlet="pageOptions"></ng-container>
+        </div>
+      </div>
+
+    </div>
+
+
+    <ng-template #pageOptions>
+        <div class="retrieve-quote">
+            <div class="container">
+                <tabset [justified]="true">
+                    <div class="tab-content">
+                        <tab heading="EMAIL ADDRESS" id="tab1">
+                            <form #userEmail="ngForm">
+                                <div class="form-group">
+                                    <label for="usr" class="required-field">Enter Your Email <span class="d-inline-block">Address<i class="fa fa-asterisk required"></i></span>                                        
+                                    </label>
+                                    <input class="form-control" required name="Email" #Email="ngModel" [ngModelOptions]="{updateOn: 'blur'}" [pattern]="emailRegex" [(ngModel)]="email" placeholder="Enter your email address" />
+                                    <app-error-message [form]="Email" [field]="'email'"></app-error-message>
+                                </div>
+
+                                <div class="form-group">
+                                  <label for="usr" class="required-field">
+                                    Enter Property <span class="d-inline-block">Address<i class="fa fa-asterisk required"></i></span>
+                                  </label>
+                                    <input class="form-control" (focus)="onFocusEmail()" (blur)="onBlurEmail()" required name="emailAddress" [(ngModel)]="emailAddress" placeholder="Enter your address" #emailAddressText />
+                                    <app-error-message [emailAddress]="emailAddress" [field]="'address'" [emailAddressFocused]="emailAddressFocused" [emailAddressBlured]="emailAddressBlured"></app-error-message>
+                                </div>
+                                 <p *ngIf="emailResponse" class="error-message">{{emailResponse}}</p>
+                                <div class="form-group text-center">
+                                    <button [disabled]="userEmail.invalid" type="button" class="btn btn-danger retrieve-btn" (click)="getRetrieveByEmail()">RETRIEVE QUOTE</button>
+                                </div>
+                            </form>
+                        </tab>
+
+                        <tab heading="QUOTE NO">
+                            <form #userQuote="ngForm">
+                                <div class="form-group">
+                                  <label for="usr" class="required-field">
+                                    Enter Quote <span class="d-inline-block">No<i class="fa fa-asterisk required"></i></span>
+                                  </label>
+                                    <input class="form-control" required name="quote_id" #QuoteID="ngModel" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="quote_id" placeholder="Enter Quote No" />
+                                    <app-error-message [form]="QuoteID" [field]="'quoteID'"></app-error-message>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usr" class="required-field">Enter Property <span class="d-inline-block">Address<i class="fa fa-asterisk required"></i></span>
+                                </label>
+                                    <input class="form-control" required name="quoteAddress" [(ngModel)]="quoteAddress" placeholder="Enter your address" #quoteAddressText />
+                                    <app-error-message [quoteAddress]="quoteAddress" [field]="'address'" [quoteAddressFocused]="quoteAddressFocused" [quoteAddressBlured]="quoteAddressBlured"></app-error-message>
+                                </div>
+                                    <p *ngIf="quoteResponse" class="error-message">{{quoteResponse}}</p>
+                                <div class="form-group text-center">
+                                    <button [disabled]="userQuote.invalid" type="button" class="btn btn-danger retrieve-btn" (click)="getRetrieveByQuote()">RETRIEVE QUOTE</button>
+                                </div>
+                            </form>
+                        </tab>
+                    </div>
+                </tabset>
+            </div>
+        </div>
+    </ng-template>
+

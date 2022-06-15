@@ -1,0 +1,1457 @@
+<div class="display-quote">
+  <div class="d-none d-sm-block container-nomargin" style="background-color: #EEECF9">
+    <app-header (goToBackPage)=goToBackPage($event)></app-header>
+    <div class="image-header-container">
+      <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+      <div class="image-header-centered-text">   Insurance Options</div>
+    </div>
+    <div class="container container-size overlay">
+      <div class="p-4 mx-auto overlay-container">
+        <ng-container *ngTemplateOutlet="pageOptions"></ng-container>
+      </div>
+    </div>
+    <app-footer></app-footer>
+  </div>
+
+  <div class="d-block d-sm-none">
+    <div *ngIf="!showComparisonTable" [@inOutAnimation]>
+      <div class="fixed-top">
+        <app-header (goToBackPage)=goToBackPage($event)></app-header>
+        <div style="border-top: white 8px solid;">
+        </div>
+      </div>
+      <div class="image-header-container">
+        <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+        <div class="image-header-centered-text">   Insurance Options</div>
+      </div>
+
+      <div class="container-fluid xs-Margin-top">
+        <div class="">
+          <ng-container *ngTemplateOutlet="pageOptions"></ng-container>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showComparisonTable" [@inOutAnimation] style="margin-top:80px">
+
+      <div class="fixed-top">
+        <app-header (goToBackPage)=openComparisonTable()></app-header>
+        <div style="border-top: #b22234 3px solid;">
+        </div>
+      </div>
+      <div class="container-fluid xs-Margin-top" [ngClass]="{'hide-overflow':animationState=='in'}">
+        <div class="">
+          <ng-container *ngTemplateOutlet="comparisonTableMobile"></ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #pageOptions>
+    <div *ngIf="showSpinner || loadingData" class="spinner-border set-position" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <!-- Multiple Coverage Desktop -->
+    <section id="OptionsDesktop" *ngIf="!isMobile">
+      <div class="container-fluid d-none d-md-block mb-5" *ngIf="coverage && coverage.length">
+        <div class="row " style="justify-content:center">
+          <div *ngFor="let option of coverage|OrderBy:'asc':'totalAmount'" class="col-3 col-md-4 col-lg-3 no-pad" [ngClass]="{ 'bottom-arrow': option.isSelected,'grey-out':(option.isSelected ==false && defaultSelection==false) }" style="padding-right: 4px;padding-left:4px">
+            <div style="background-color: #dedbef;">
+              <div class="col-pad">
+                <img class="w-100 mt-3 company-logo-lg" src='assets/images/{{option.logo}}.png'>
+                <hr class="divider-rule" />
+                <br />
+                <div class="text-center">
+                  <p class="quote-title">{{option.coverageType}}</p>
+                  <p style="font-size: 27px;font-weight: bold;">$ {{option.buildingCoverage | number}}<i *ngIf="((option.companyName=='NFIP' || option.insuranceType==='Basic') && isRcAboveLimit)" class="fa fa-asterisk required"></i></p>
+                </div>
+                <hr class="divider-rule" />
+                <div class="text-center">
+                  <p *ngIf="option.companyName==='NFIP'" class="quote-title">Deductibles</p>
+                  <p *ngIf="option.companyName!=='NFIP'" class="quote-title">Deductible</p>
+                  <p style="font-size: 25px;font-weight: bold;">
+                    <span *ngIf="typeOf(option.buildingDeductible) === 'number'">$ {{option.buildingDeductible | number}}</span>
+                    <span *ngIf="typeOf(option.buildingDeductible) === 'string'">{{option.buildingDeductible}}</span>
+                  </p>
+                </div>
+                <button type="button" class="details-button details-button-outline" (click)="setSelectedCoverage(option,false)">{{option.isSelected ? 'Hide Details': 'View Details'}}</button>
+                <br />
+              </div>
+              <br />
+
+              <div class="text-center col-pad" *ngIf="(ecMsgResponse === undefined && !isECCertificateNotExist() && (ecExpiryPopUp && (isQualifiedBuyer || isValidInterest ))) && option.companyName ==='NFIP'" style="min-height:173px;">
+                <button type="button" style="margin-top:64px" class="btn btn-danger w-100" (click)="openECModal()">
+                  Contact Us
+                </button>
+              </div>
+              
+              <div *ngIf="(ecMsgResponse === 'preFirmSlabYesECQualified' || this.ecQuestions?.sc1) && !(ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram') && option.companyName ==='NFIP'" style="min-height:173.2px;padding: 2%;">
+                  <button type="button" style="margin-bottom:1rem;width: 98%;height:49px; font-weight:bold;margin-top: 35%" class="btn btn-danger w-100" (click)="openECModal()">
+                    Contact Us
+                  </button>
+              </div>
+
+              <div *ngIf="!(ecMsgResponse === 'preFirmSlabYesECQualified' || 
+              ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram' || 
+              ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram' ||
+              ecMsgResponse === 'postFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram' || this.ecQuestions?.sc1) || option.companyName !='NFIP'">
+                <div id="ribbon-container" *ngIf="option.companyName==='Zurich'">
+                  <span id="ribbon" (click)="openPaymentOptionsModal()">View payment options</span>
+                </div>
+                <div *ngIf="!post_firm_hiscox_only || option.companyName!=='NFIP'">
+                  <div *ngIf="!ecExpiryPopUp || (ecExpiryPopUp && !isQualifiedBuyer && !isValidInterest) || option.companyName!=='NFIP' || ecMsgResponse !== undefined || isECCertificateNotExist()" style="min-height:169px;background-color:#3c3b6e;padding: 2%;">
+                    <div class="text-center" style="color:white" [ngStyle]="{'padding-top':(option.isSelected ==false && defaultSelection==false)?'25%':'1rem'}">
+                      <p>Total Annual Cost</p>
+                      <p *ngIf="this.ecQuestions?.sc3 && option.companyName ==='NFIP'" style="font-size: 30px;font-weight: bold;">N/A<span style="color:#b22234">**</span></p>
+                      <p style="font-size: 27px;font-weight: bold;" *ngIf="!((this.ecQuestions?.sc1 || this.ecQuestions?.sc3) && option.companyName ==='NFIP')">
+                        <span *ngIf="option.companyName=='NFIP' && (ecExpiryPopUp && (!isQualifiedBuyer && !isValidInterest))">N/A</span>
+                        <span *ngIf="option.companyName!=='NFIP' || !ecExpiryPopUp">{{option.totalAmount | currency}}</span>
+                        <span *ngIf="(isECCertificateNotExist() || ecMsgResponse === 'preFirmECNoQualified' || ecMsgResponse === 'preFirmECYesQualified' || (ecExpiryPopUp && (!isQualifiedBuyer && !isValidInterest))) && option.companyName =='NFIP'">
+                          <i class="fa fa-asterisk required double-asterix-ml1"></i><i class="fa fa-asterisk required double-asterix-ml2"></i>
+                        </span>
+                      </p>
+                      <button type="button" *ngIf="(option.isSelected||defaultSelection==true) && (option.companyName !=='NFIP' || !ecExpiryPopUp) && !(this.ecQuestions?.sc3 && option.companyName ==='NFIP')" class="btn btn-danger" style="width: 98%;height:49px; font-weight:bold" (click)="buyPolicy(option)">BUY POLICY &nbsp;<img style="height:34px" src="https://static-cdn. .com/arrow.png " /></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- conatct us: post firm scenarios  -->
+              <div class="text-center col-pad" *ngIf="(ecMsgResponse==='postFirmECYesQualified' || ecMsgResponse === 'postFirmECNoQualified' || ecMsgResponse === 'postFirmSlabNoECQualified' || ecMsgResponse === 'postFirmSlabYesECQualified' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram') && option.companyName ==='NFIP'" style="min-height:173px;">
+                <button type="button" style="margin-top:64px" class="btn btn-danger w-100" (click)="openNoHiscoxMassiveCert()">
+                  Contact Us
+                </button>
+              </div>
+
+              <!-- total amount: post firm scenarios  -->
+              <span *ngIf="(ecMsgResponse === 'postFirmECYesUnqualified' || ecMsgResponse === 'postFirmECNoUnqualified' || ecMsgResponse === 'postFirmSlabNoECUnqualified' || ecMsgResponse === 'postFirmSlabYesECUnqualified' || ecMsgResponse ==='postFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram') &&  option.companyName ==='NFIP'">
+                <div style="min-height:169px;background-color:#3c3b6e;padding: 2%;">
+                  <div class="text-center" style="color:white" [ngStyle]="{'padding-top':(option.isSelected ==false && defaultSelection==false)?'25%':'1rem'}">
+                    <p>Total Annual Cost</p>
+                    <p *ngIf="this.ecQuestions?.sc3 && option.companyName ==='NFIP'" style="font-size: 30px;font-weight: bold;">N/A<span style="color:#b22234">**</span></p>
+                    <p style="font-size: 30px;font-weight: bold;" *ngIf="!((this.ecQuestions?.sc1 || this.ecQuestions?.sc3) && option.companyName ==='NFIP')">
+                      <span>N/A</span>
+                      <span *ngIf="(ecMsgResponse === 'postFirmSlabNoECUnqualified' || ecMsgResponse === 'postFirmECYesUnqualified' || ecMsgResponse === 'postFirmECNoUnqualified' || ecMsgResponse === 'postFirmSlabYesECUnqualified' || ecMsgResponse ==='postFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram') && option.companyName =='NFIP'">
+                        <i class="fa fa-asterisk required double-asterix-ml1"></i><i class="fa fa-asterisk required double-asterix-ml2"></i>
+                      </span>
+                    </p>
+                    <!--  <button type="button" *ngIf="option.isSelected||defaultSelection==true && (option.companyName !=='NFIP' || !ecExpiryPopUp) && !(this.ecQuestions?.sc3 && option.companyName ==='NFIP')" class="btn btn-danger" style="width: 98%;height:49px; font-weight:bold" (click)="buyPolicy(option)">BUY POLICY &nbsp;<img style="height:34px" src="https://static-cdn. .com/arrow.png " /></button> -->
+                  </div>
+                </div>
+              </span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Coverage Mobile -->
+
+    <section id="OptionsMobile" *ngIf="isMobile">
+      <div *ngIf="coverage && coverage.length>0" class="d-block no-pad d-md-none">
+        <div class="row" *ngFor="let option of coverage|OrderBy:'asc':'totalAmount'">
+          <div class="col-12">
+            <div class="row pb-3">
+              <div class="col-8 no-pad" style="background-color: #eeecf9; ">
+                <section id="Left-Header">
+                  <div class="col-12 no-pad">
+                    <div class="row pt-2">
+                      <div class="col pr-0">
+                        <img class="company-logo-mob pl-2" src="assets/images/{{option.logo}}.png">
+                      </div>
+                      <div class="col-9 pl-0 text-center" style="line-height:18px">
+                        <span class="quote-title">{{option.underwrittenBy +' '}}<span style="color:black">{{option.insuranceType}}</span> </span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section id="Left-Data">
+                  <div class="col-12 no-pad pt-2">
+
+                    <div class="dashed-border">
+                      <span class="col-left-font">
+                        Building <span class="d-inline-block">Coverage<i *ngIf="isRcAboveLimit && (option.companyName=='NFIP' || option.insuranceType==='Basic')" class="d-inline-block" class="fa fa-asterisk required"></i></span>
+                      </span>
+                      <span class="col-right-font">{{option.buildingCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                    </div>
+                    <div *ngIf="option.companyName==='NFIP'" class="dashed-border">
+                      <span class="col-left-font">Building Deductible</span>
+                      <span class="col-right-font" *ngIf="option.buildingCoverage">
+                        <span *ngIf="typeOf(option.buildingDeductible) === 'number'">
+                          {{option.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}
+                        </span>
+                        <span *ngIf="typeOf(option.buildingDeductible) === 'string'">
+                          {{option.buildingDeductible}}
+                        </span>
+                      </span>
+                      <span class="col-right-font" *ngIf="!option.buildingCoverage">N/A</span>
+                    </div>
+                    <div class="dashed-border">
+                      <span class="col-left-font">Personal Property Coverage</span>
+                      <span class="col-right-font">{{option.contentsCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                    </div>
+                    <div *ngIf="option.companyName==='NFIP'" class="dashed-border">
+                      <span class="col-left-font">Personal Property Deductible</span>
+                      <span class="col-right-font">
+                        <span *ngIf="typeOf(option.contentsDeductible) === 'number'">
+                          {{option.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}
+                        </span>
+                        <span *ngIf="typeOf(option.contentsDeductible) === 'string'">
+                          {{option.contentsDeductible}}
+                        </span>
+                      </span>
+                    </div>
+                    <div *ngIf="option.companyName!=='NFIP'" class="dashed-border">
+                      <span class="col-left-font">Deductible</span>
+                      <span class="col-right-font">{{option.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                    </div>
+                    <div class="dashed-border" *ngIf="option.companyName!=='NFIP'">
+                      <div class="col-left-font">Other Structures Coverage</div>
+                      <div *ngIf="typeOf(option.otherStructures) === 'string'" class="col-right-font">{{option.otherStructures}}</div>
+                      <div *ngIf="typeOf(option.otherStructures) === 'number'" class="col-right-font"><span *ngIf="option.companyName==='NFIP'">Unfinished Detached Garage Only: </span>{{option.otherStructures | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+                    </div>
+                    <div class="dashed-border" *ngIf="option.companyName!=='NFIP'">
+                      <div class="col-left-font">Additional Living Expense</div>
+                      <div *ngIf="typeOf(option.livingExpense) === 'string'" class="col-right-font">{{option.livingExpense}}</div>
+                      <div *ngIf="typeOf(option.livingExpense) === 'number'" class="col-right-font">{{option.livingExpense | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+                    </div>
+                    <div class="dashed-border">
+                      <div class="view-details-mob col-left-font  d-inline" (click)="viewMoreDetailsMobile(option)">
+                        View more details
+                      </div>
+                      <div *ngIf="coverage && coverage.length>1" class="view-details-mob col-right-font ">
+                        <span (click)="openComparisonTable()">Compare</span>
+                      </div>
+                    </div>
+                    <!--<div style="text-align:center;padding-bottom:6px" class="w-100">
+                      <button type="button" class="btn btn-danger" (click)="openComparisonTable()">Compare Products</button>
+                    </div>-->
+                    <!--<div class="view-details-mob col-left-font dashed-border" (click)="openComparisonTable()">Compare Products</div>-->
+
+                  </div>
+                </section>
+              </div>
+              <div class="col-4 d-flex pr-1 pl-1" style="background-color: #3c3b6e;align-items:center;justify-content: center;">
+                <div id="ribbon-container" *ngIf="option.companyName==='Zurich'">
+                  <span id="ribbon" (click)="openPaymentOptionsModal()">View payment options</span>
+                </div>
+                <div *ngIf="(ecMsgResponse === undefined && !isECCertificateNotExist() && (ecExpiryPopUp && (isQualifiedBuyer || isValidInterest ))) && option.companyName ==='NFIP'" class="text-center">
+                  <button type="button" style="font-weight:bold;font-size:3.3vw" class="btn btn-block btn-danger w-100" (click)="openECModal()">
+                    Contact Us
+                  </button>
+                </div>
+
+                <div *ngIf="(ecMsgResponse === 'preFirmSlabYesECQualified' || this.ecQuestions?.sc1) && !(ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram') && option.companyName ==='NFIP'" class="text-center">
+                  <button type="button" style="font-weight:bold;font-size:3.3vw" class="btn btn-block btn-danger w-100" (click)="openECModal()">
+                    Contact Us
+                  </button>
+                </div>
+
+                <section *ngIf="!(this.ecQuestions?.sc1 || ecMsgResponse === 'preFirmSlabYesECQualified' || ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateUnqualifiedInValidDiagram') || option.companyName !='NFIP'">
+                  <div *ngIf="!post_firm_hiscox_only || option.companyName!=='NFIP'">
+                    <div class="text-center" style="color:white" *ngIf="!ecExpiryPopUp || (ecExpiryPopUp && !isQualifiedBuyer && !isValidInterest) || option.companyName!=='NFIP' || ecMsgResponse !== undefined || isECCertificateNotExist()">
+                      <!-- <div class="text-center" style="color:white"> -->
+                      <span style="font-size:4vw">Total<span style="display:block">Annual Cost</span> </span>
+                      <p *ngIf="this.ecQuestions?.sc3 && option.companyName ==='NFIP'" style="font-size: 30px;font-weight: bold;">N/A<span style="color:#b22234">**</span></p>
+                      <p *ngIf="!(this.ecQuestions?.sc3)||option.companyName !='NFIP'" style="font-size: 5vw;font-weight: bold;">
+                        <span *ngIf="option.companyName=='NFIP' && (ecExpiryPopUp && (!isQualifiedBuyer && !isValidInterest))">N/A</span>
+                        <span *ngIf="option.companyName!=='NFIP' || !ecExpiryPopUp">{{option.totalAmount | currency}}</span>
+                        <span *ngIf="(isECCertificateNotExist() || ecMsgResponse === 'preFirmECNoQualified' || ecMsgResponse === 'preFirmECYesQualified'|| (ecExpiryPopUp && (!isQualifiedBuyer && !isValidInterest))) && option.companyName =='NFIP'">
+                          <i class="fa fa-asterisk required double-asterix-ml1"></i><i class="fa fa-asterisk required double-asterix-ml2"></i>
+                        </span>
+                      </p>
+                      <div *ngIf="!(this.ecQuestions?.sc3)||option.companyName !='NFIP'">
+                        <button type="button" class="btn btn-block btn-danger" *ngIf="option.companyName !=='NFIP' || !ecExpiryPopUp" (click)="buyPolicy(option)"><span style="font-weight:bold;font-size:3.3vw">BUY NOW</span>&nbsp;<img style="height:5vw" src="https://static-cdn. .com/arrow.png " /></button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <div *ngIf="(ecMsgResponse==='postFirmECYesQualified' || ecMsgResponse === 'postFirmECNoQualified' || ecMsgResponse === 'postFirmSlabNoECQualified' || ecMsgResponse === 'postFirmSlabYesECQualified' || ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram') && option.companyName ==='NFIP'" class="text-center">
+                  <button type="button" style="font-weight:bold;font-size:3.3vw" class="btn btn-block btn-danger w-100" (click)="openNoHiscoxMassiveCert()">
+                    Contact Us
+                  </button>
+                </div>
+
+                <span *ngIf="(ecMsgResponse === 'postFirmECYesUnqualified' || ecMsgResponse === 'postFirmECNoUnqualified' || ecMsgResponse === 'postFirmSlabNoECUnqualified' || ecMsgResponse === 'postFirmSlabYesECUnqualified' || ecMsgResponse ==='postFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram') &&  option.companyName ==='NFIP'">
+                  <div class="text-center" style="color:white" *ngIf="!ecExpiryPopUp || (ecExpiryPopUp && !isQualifiedBuyer && !isValidInterest) || option.companyName!=='NFIP' || ecMsgResponse !== undefined || isECCertificateNotExist()">
+                    <span style="font-size:4vw">Total<span style="display:block">Annual Cost</span> </span>
+                    <p style="font-size: 5vw;font-weight: bold;">
+                      <span *ngIf="option.companyName=='NFIP'">N/A</span>
+                      <span *ngIf="option.companyName!=='NFIP'">{{option.totalAmount | currency}}</span>
+                      <span *ngIf="(ecMsgResponse === 'postFirmECYesUnqualified' || ecMsgResponse === 'postFirmECNoUnqualified' || ecMsgResponse === 'postFirmSlabNoECUnqualified' || ecMsgResponse === 'postFirmSlabYesECUnqualified' || ecMsgResponse ==='postFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram') && option.companyName =='NFIP'">
+                        <i class="fa fa-asterisk required double-asterix-ml1"></i><i class="fa fa-asterisk required double-asterix-ml2"></i>
+                      </span>
+                    </p>
+                    <!--    <button type="button" class="btn btn-block btn-danger" *ngIf="option.companyName !=='NFIP' || !ecExpiryPopUp" (click)="buyPolicy(option)"><span style="font-weight:bold;font-size:3.3vw">BUY NOW</span>&nbsp;<img style="height:5vw" src="https://static-cdn. .com/arrow.png " /></button> -->
+                  </div>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div *ngIf="isNFIPAvailable">
+          <div class="row">
+            <div class="col-12" *ngIf="(isRcAboveLimit)">
+              <i class="fa fa-asterisk required"></i>
+              <p class="text-margin">The amount of coverage shown is the maximum amount available in this program. This amount may be less than the full replacement cost of your building or personal property.</p>
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="(isECCertificateNotExist() || ecMsgResponse === 'preFirmECNoQualified')">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              An Elevation Certificate may help you qualify for a more favorable premium with the National    Insurance Program. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC.</span></a> If you need assistance, please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST<br><br>
+              <p *ngIf="processInstance">Your Quote Number is <br><span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+              <div class="text-center">
+                <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'preFirmECYesQualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              You may be eligible for a more favorable premium with the National    Insurance Program.<br><br> Please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.<br><br>
+
+              <p *ngIf="processInstance">Your Quote Number is <br><span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+              <div class="text-center">
+                <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmECYesUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the complexity of this quote we are unable to automatically provide a quote for this property, you will need to contact an agent in your community to get a    insurance quote.
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmECNoUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC</span></a>. You may contact an agent in your community to get a quote.
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmSlabNoECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC</span></a>.
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmSlabYesECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the Expiration date of this Elevation Certificate, we are unable to provide an NFIP quote for this property, you will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'preFirmSlabYesECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the Expiration date of this Elevation Certificate, we are unable to provide an NFIP quote for this property, you will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+
+           <div class="mt-2 ec-cert-msg-bkg" *ngIf="!ecQuestions?.sc3 && (ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateUnqualifiedInValidDiagram')">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+              <div style="margin-left:25px;">
+                Due to the complexity of this quote we are unable to automatically provide a quote for this property, you will need to contact an agent in your community to get a    insurance quote.
+              </div>
+          </div>  
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="this.ecQuestions?.sc3">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+              <div style="margin-left:25px;">
+              In order to receive an NFIP quote, you need an Elevation Certificate based on Finished Construction.  You will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+        </div>
+        <br>
+        <div *ngIf="!showSpinner">
+          <div class="row ">
+            <button *ngIf="!userEmail" data-toggle="modal" data-target="#myModal" (click)="openSendQuoteModal(template)" class="btn btn-danger center-buttons">SAVE AND SEND QUOTE</button>
+            <p class="confirm-message" *ngIf="quoteConfirm">Your quote has been saved successfully and a quote summary email has been sent to your email address!</p>
+          </div>
+          <div class="disclaimer-title">About Your Quote</div>
+          <div class="disclaimer">
+            This quotation is based on information supplied by you. Please review the quote inputs for accuracy. This non-binding quotation is not an offer of or a contract for insurance. Price and terms associated with this quote are subject to underwriting review
+            and may change. This quote may be withdrawn for any reason prior to the submission of premium in full and a completed, signed application for insurance. Please refer to the insurance policy for complete coverages, terms, conditions
+            and exclusions. National    Insurance Program (NFIP)    insurance policies may only be cancelled for reasons allowed under the program – check their website for specific details. The amount of coverage available may be less
+            than the replacement cost of your building and personal property, and you may need to procure additional amounts of insurance from other sources.
+          </div>
+        </div>
+        <div class="row">
+          <div style="height:57px;"></div>
+        </div>
+
+        <div class="fixed-bottom bottom-slider" *ngIf="(coverage.length > 1 ||  coverage.length === 1 && processInstance.model_definition_id === 'md_pre_firm_policy') && sliderDeductableValueMobile">
+          <div class="text-center font-weight-bold">Customize the Deductible</div>
+          <div class="slider-container">
+            <ng5-slider [(value)]="sliderDeductableValueMobile" [options]="deductibleOptions" (userChangeEnd)="sliderDeductibleEvent(sliderDeductableValueMobile,processInstance.model_definition_id)"></ng5-slider>
+          </div>
+        </div>
+
+        <div class="fixed-bottom bottom-slider" *ngIf="(processInstance && processInstance.model_definition_id === 'md_pre_firm_policy' && coverage.length === 1 && coverage[0].contentsCoverage && coverage[0].buildingCoverage === 0)">
+          <div class="text-center font-weight-bold">Customize the Deductible</div>
+          <div class="slider-container">
+            <ng5-slider [(value)]="propertyValueMobile" [options]="deductibleOptionsContentsOnly" (userChangeEnd)="sliderContentEvent(propertyValueMobile)"></ng5-slider>
+          </div>
+        </div>
+
+
+      </div>
+    </section>
+
+    <!-- Single Coverage -->
+    <section id="OptionsTable">
+
+      <div class="container-fluid d-md-block" *ngIf="!isMobile">
+        <div class="row insurance-options-container" *ngIf="selectedCoverage">
+          <div class="col-12 col-sm-2 main-section img-section">
+            <img class="logo" src="assets/images/{{selectedCoverage.logo}}.png" alt="  ">
+          </div>
+          <div class="col-12 p-0 main-section" [ngClass]="{ 'col-sm-7' : !coverage.length ,  'col-sm-9' : coverage.length}">
+            <div class="highlight-section">
+              <strong>Underwritten By: </strong>{{selectedCoverage.underwrittenBy}}
+            </div>
+            <div class="scroller container">
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">
+                  Building Coverage
+                  <i *ngIf="isRcAboveLimit && (selectedCoverage.companyName=='NFIP' || selectedCoverage.insuranceType==='Basic')" class="asterix-padding fa fa-asterisk required"></i>
+                  <i class="material-icons text-muted view-more-help" [ngStyle]="{'margin-left': isRcAboveLimit && (selectedCoverage.companyName=='NFIP' || selectedCoverage.insuranceType==='Basic') ? '13px' : '' }" (click)="toggleSingleCoverageDetails('buildingCoverage')">info_outline</i>
+                </div>
+                <div class="col-5 right-align">{{selectedCoverage.buildingCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.buildingCoverage">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'buildingCoverage') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('buildingCoverage')" />
+              </div>
+              <div *ngIf="selectedCoverage.companyName==='NFIP'" class="dashed-border row">
+                <div class="col-7 flex-align">Building Deductible<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('buildingDeductible')">info_outline</i></div>
+                <div class="col-5 right-align" *ngIf="selectedCoverage.buildingCoverage">
+                  <span *ngIf="typeOf(selectedCoverage.buildingDeductible) === 'string'">     {{selectedCoverage.buildingDeductible}}</span>
+                  <span *ngIf="typeOf(selectedCoverage.buildingDeductible) === 'number'">{{selectedCoverage.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+                </div>
+                <div class="col-5 right-align" *ngIf="!selectedCoverage.buildingCoverage">N/A</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="selectedCoverage.companyName==='NFIP' && singleCoverageDetails.buildingDeductible">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'buildingDeductible') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('buildingDeductible')" />
+              </div>
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">Personal Property Coverage<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('personalPropertyCoverage')">info_outline</i></div>
+                <div class="col-5 right-align"> {{selectedCoverage.contentsCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.personalPropertyCoverage">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'personalPropertyCoverage') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('personalPropertyCoverage')" />
+              </div>
+              <div *ngIf="selectedCoverage.companyName==='NFIP'" class="dashed-border row">
+                <div class="col-7 flex-align">Personal Property Deductible<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('personalPropertyDeductible')">info_outline</i></div>
+                <div class="col-5 right-align">
+                  <span *ngIf="typeOf(selectedCoverage.contentsDeductible)==='number'">{{selectedCoverage.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                  <span *ngIf="typeOf(selectedCoverage.contentsDeductible)==='string'">{{selectedCoverage.contentsDeductible}}</span>
+                </div>
+              </div>
+              <div *ngIf="selectedCoverage.companyName==='NFIP' && singleCoverageDetails.personalPropertyDeductible" class="dashed-border row details-text-back">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'personalPropertyDeductible') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('personalPropertyDeductible')" />
+              </div>
+              <div *ngIf="selectedCoverage.companyName!=='NFIP'" class="dashed-border row">
+                <div class="col-7 flex-align">Deductible<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('deductible')">info_outline</i></div>
+                <div class="col-5 right-align">{{selectedCoverage.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div *ngIf="selectedCoverage.companyName!=='NFIP' && singleCoverageDetails.deductible" class="dashed-border row details-text-back">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'deductible') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('deductible')" />
+              </div>
+              <div class="dashed-border row" *ngIf="selectedCoverage.buildingCoverage">
+                <div class="col-7 flex-align">Building Loss Settlement<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('buildingLossSettlement')">info_outline</i></div>
+                <div class="col-5 right-align">{{selectedCoverage.buildingLossSettlement}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="selectedCoverage.buildingCoverage && singleCoverageDetails.buildingLossSettlement">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'buildingLossSettlement') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('buildingLossSettlement')" />
+              </div>
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">Personal Property Loss Settlement<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('personalPropertyLossSettlement')">info_outline</i></div>
+                <div class="col-5 right-align">{{selectedCoverage.personlPropertyLossSettlement}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.personalPropertyLossSettlement">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'personalPropertyLossSettlement') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('personalPropertyLossSettlement')" />
+              </div>
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">Other Structures Coverage<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('otherStructuresCoverage')">info_outline</i></div>
+                <div *ngIf="typeOf(selectedCoverage.otherStructures) === 'string'" class="col-5 right-align">{{selectedCoverage.otherStructures}}</div>
+                <div *ngIf="typeOf(selectedCoverage.otherStructures) === 'number'" class="col-5 right-align"><span *ngIf="selectedCoverage.companyName==='NFIP'">Unfinished Detached Garage Only: </span>{{selectedCoverage.otherStructures | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.otherStructuresCoverage">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'otherStructuresCoverage') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('otherStructuresCoverage')" />
+              </div>
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">Additional Living Expense<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('additionalLivingExpense')">info_outline</i></div>
+                <div *ngIf="typeOf(selectedCoverage.livingExpense) === 'string'" class="col-5 right-align">{{selectedCoverage.livingExpense}}</div>
+                <div *ngIf="typeOf(selectedCoverage.livingExpense) === 'number'" class="col-5 right-align">{{selectedCoverage.livingExpense | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.additionalLivingExpense">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'additionalLivingExpense') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('additionalLivingExpense')" />
+              </div>
+              <div class="dashed-border row">
+                <div class="col-7 flex-align">Ordiance or Law (ICC)<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('ordinance')">info_outline</i></div>
+                <div class="col-5 right-align">
+                  <span *ngIf="typeOf(selectedCoverage.ordiance) === 'number'">{{selectedCoverage.ordiance | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                  <span *ngIf="typeOf(selectedCoverage.ordiance) === 'string'">{{selectedCoverage.ordiance}}</span>
+                </div>
+              </div>
+              <div class="dashed-border row details-text-back" *ngIf="singleCoverageDetails.ordinance">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'ordinance') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('ordinance')" />
+              </div>
+              <div class="row" [ngClass]="{'dashed-border': singleCoverageDetails.waitingPeriod===true, 'last-item': singleCoverageDetails.waitingPeriod===false}">
+                <div class="col-7 flex-align">Waiting Period (No Waiting Period  for new loans)<i class="material-icons text-muted view-more-help" (click)="toggleSingleCoverageDetails('waitingPeriod')">info_outline</i></div>
+                <div class="col-5 right-align">{{selectedCoverage.waitingPeriod}}</div>
+              </div>
+              <div class="last-item row details-text-back" *ngIf="singleCoverageDetails.waitingPeriod">
+                <div class="details-text col-12">{{ getHelpText(selectedCoverage.helpText,'waitingPeriod') }}</div>
+                <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details-text" (click)="toggleSingleCoverageDetails('waitingPeriod')" />
+              </div>
+            </div>
+          </div>
+
+          <!--    <div class="col-sm-3 p-0 d-flex buy-policy-section" *ngIf="this.ecQuestions?.sc1 && selectedCoverage.companyName ==='NFIP'">
+               <div class="highlight-section d-flex w-100" style="align-items: center;justify-content: center;">
+
+                   <button type="button" style="margin-bottom:1rem;width: 98%;height:49px; font-weight:bold;margin-top: 35%" class="btn btn-block btn-danger w-100" (click)="openECModal()">
+                     Contact Us
+                   </button>
+
+               </div>
+             </div> -->
+
+          <div class="col-sm-3 p-0 d-flex buy-policy-section" *ngIf="!coverage.length && selectedCoverage.companyName" style="background-color: #3c3b6e;align-items:center;justify-content: center;">
+            <div class="highlight-section">
+              <div class="d-block">Total Annual Cost</div>
+              <div class="ppc-value d-block">{{selectedCoverage.totalAmount | currency }}<span *ngIf="(isECCertificateNotExist() || ecMsgResponse === 'preFirmECNoQualified' || ecMsgResponse === 'preFirmECYesQualified') && selectedCoverage.companyName =='NFIP'"><i class="fa fa-asterisk required double-asterix-ml1"></i><i class="fa fa-asterisk required double-asterix-ml2"></i></span></div>
+              <button type="button" class="btn btn-block btn-danger" (click)="buyPolicy(selectedCoverage)"><span style="font-weight:bold;">BUY NOW</span>&nbsp;<img style="height:34px" src="https://static-cdn. .com/arrow.png " /></button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isNFIPAvailable">
+          <div class="row" *ngIf="coverage">
+            <div class="col-12" *ngIf="isRcAboveLimit">
+              <i class="fa fa-asterisk required"></i>
+              <p class="text-margin">The amount of coverage shown is the maximum amount available in this program. This amount may be less than the full replacement cost of your building or personal property.</p>
+            </div>
+          </div>
+          <!-- EC Certificate message -->
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="(isECCertificateNotExist() || ecMsgResponse === 'preFirmECNoQualified')">
+            <span><i class="fa fa-asterisk required double-asterix-ml"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              An Elevation Certificate may help you qualify for a more favorable premium with the National    Insurance Program. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC.</span></a> If you need assistance, please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST<br><br>
+              <p *ngIf="processInstance">Your Quote Number is <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+              <div class="text-center">
+                <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecQuestions?.sc3">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+              <div style="margin-left:25px;">
+              In order to receive an NFIP quote, you need an Elevation Certificate based on Finished Construction.  You will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+          
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'preFirmECYesQualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              You may be eligible for a more favorable premium with the National    Insurance Program.<br><br> Please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.<br><br>
+
+              <p *ngIf="processInstance">Your Quote Number is <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+              <div class="text-center">
+                <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmECYesUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the complexity of this quote we are unable to automatically provide a quote for this property, you will need to contact an agent in your community to get a    insurance quote.
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmECNoUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC</span></a>. You may contact an agent in your community to get a quote.
+            </div>
+          </div>
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmSlabNoECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a data-toggle="modal" (click)="openMassivecertModal()"><span class="ec_link">www.massivecert.com/nationalEC</span></a>.
+            </div>
+          </div>
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'postFirmSlabYesECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the Expiration date of this Elevation Certificate, we are unable to provide an NFIP quote for this property, you will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="ecMsgResponse === 'preFirmSlabYesECUnqualified'">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the Expiration date of this Elevation Certificate, we are unable to provide an NFIP quote for this property, you will need to contact an agent in your community to get a    quote.
+            </div>
+          </div>
+
+          <div class="mt-2 ec-cert-msg-bkg" *ngIf="!ecQuestions?.sc3 && (ecMsgResponse === 'preFirmECTemplateUnqualifiedInValidDiagram' || ecMsgResponse === 'postFirmECTemplateUnqualifiedInValidDiagram')">
+            <span><i class="fa fa-asterisk required" style="margin-left: 12px"></i></span><span><i class="fa fa-asterisk required"></i></span>
+            <div style="margin-left:25px;">
+              Due to the complexity of this quote we are unable to automatically provide a quote for this property, you will need to contact an agent in your community to get a    insurance quote
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row" *ngIf="processInstance && processInstance.model_definition_id === 'md_pre_firm_policy' && sliderDeductibleValue">
+          <div class="col-12">
+            <label class="custom-slider">Customize the Deductible:</label>
+            <div class="slider-container pl-3">
+              <ng5-slider [(value)]="sliderDeductibleValue" [options]="deductibleOptions" (userChangeEnd)="sliderDeductibleEvent(sliderDeductibleValue, processInstance.model_definition_id)"></ng5-slider>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="processInstance && processInstance.model_definition_id === 'md_prefered_risk_policy' && sliderDeductibleValue">
+          <div class="col-12" *ngIf="!(selectedCoverage && selectedCoverage.companyName === 'NFIP')">
+            <label class="custom-slider">Customize the Deductible:</label>
+            <div class="slider-container pl-3">
+              <ng5-slider [(value)]="sliderDeductibleValue" [options]="deductibleOptions" (userChangeEnd)="sliderDeductibleEvent(sliderDeductibleValue, processInstance.model_definition_id)"></ng5-slider>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="(processInstance && processInstance.model_definition_id === 'md_pre_firm_policy' && selectedCoverage && selectedCoverage.contentsCoverage && !selectedCoverage.buildingCoverage)">
+          <div class="col-12">
+            <label>Personal Property Deductible</label>
+            <i class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{deductibleHelpText}}">info_outline</i>
+            <span class="value-label"> : &nbsp; &nbsp;$ {{propertyValue | number}}</span>
+            <div class="slider-container">
+              <ng5-slider [(value)]="propertyValue" [options]="deductibleOptionsContentsOnly" (userChangeEnd)="sliderContentEvent(propertyValue)"></ng5-slider>
+            </div>
+          </div>
+          <div *ngIf="showInvalidOptionMsg" class="text-danger">Choose a different option</div>
+        </div>
+
+        <div *ngIf="!showSpinner">
+          <div class="row ">
+            <button *ngIf="!userEmail" data-toggle="modal" data-target="#myModal" (click)="openSendQuoteModal(template)" class="btn btn-danger center-buttons">SAVE AND SEND QUOTE</button>
+            <p class="confirm-message" *ngIf="quoteConfirm">Your quote has been saved successfully and a quote summary email has been sent to your email address!</p>
+          </div>
+          <section id="Desktop-Comparision-Table">
+            <div class="compare-desktop container-fluid mt-5" *ngIf="coverage && coverage.length>1">
+              <div class="row headers">
+                <div class="col-4">Product Comparison</div>
+                <div class="col " *ngFor="let option of coverage">
+                  <div>{{option.insuranceCompanyName? option.insuranceCompanyName : option.companyName}}<span *ngIf="option.companyName!='NFIP' && option.companyName!='Zurich'"><br />({{option.insuranceType}})</span></div>
+                </div>
+              </div>
+
+              <div class="row table-data">
+                <div class="col-4 first-col tac">Total Annual Cost</div>
+                <div class="col other-col" *ngFor="let option of coverage">
+                  <span *ngIf="typeOf(option.totalAmount) === 'number'">
+                    {{option.totalAmount | currency}}
+                  </span>
+                  <span *ngIf="typeOf(option.totalAmount) === 'string'">
+                    {{option.totalAmount}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Building Coverage
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingCoverage')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">{{option.buildingCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Personal Property Coverage
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyCoverage')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">{{option.contentsCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+              </div>
+              <div class="Hiscox row table-data">
+                <div class="col-4 sp-col">
+                  <div class="row no-gutters h-100">
+                    <div class="col-12 flex-align first-col">
+                      Building Deductible
+                      <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingDeductible')}}">info_outline</i>
+                    </div>
+                    <div class="col-12 flex-align first-col">
+                      Personal Property Deductible
+                      <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyDeductible')}}">info_outline</i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col sp-col" *ngFor="let option of coverage">
+                  <div class="row no-gutters h-100" *ngIf="option.companyName==='NFIP'">
+                    <div class="col-12 other-col">
+                      <span *ngIf="typeOf(option.buildingDeductible)==='number'">{{option.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+                      <span *ngIf="typeOf(option.buildingDeductible)==='string'">{{option.buildingDeductible}}</span>
+                    </div>
+                    <div class="col-12 other-col">
+                      <span *ngIf="typeOf(option.contentsDeductible)==='number'">{{option.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                      <span *ngIf="typeOf(option.contentsDeductible)==='string'">{{option.contentsDeductible}}</span>
+                    </div>
+                  </div>
+                  <div class="sp-col-double" *ngIf="option.companyName!='NFIP'">
+                    Single<br />Deductible:<br />{{option.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}
+                  </div>
+                </div>
+
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Building Loss Settlement
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingLossSettlement')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">{{option.buildingLossSettlement}}</div>
+
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Personal Property Loss Settlement
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyLossSettlement')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">{{option.personlPropertyLossSettlement}}</div>
+              </div>
+
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col" style="height:60px">
+                  Other Structures Coverage
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'otherStructuresCoverage')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage" style="height:60px">
+                  <div *ngIf="typeOf(option.otherStructures) === 'string'">{{option.otherStructures}}</div>
+                  <div *ngIf="typeOf(option.otherStructures) === 'number'">
+                    <span *ngIf="option.companyName==='NFIP'">Unfinished Detached Garage Only: </span>
+                    {{option.otherStructures | currency : 'USD' : 'symbol' : '1.0-0'}}
+                  </div>
+                </div>
+
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Additional Living Expense
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'additionalLivingExpense')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">
+                  <div *ngIf="typeOf(option.livingExpense) === 'string'">{{option.livingExpense}}</div>
+                  <div *ngIf="typeOf(option.livingExpense) === 'number'">{{option.livingExpense | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+                </div>
+
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Ordiance or Law (ICC)
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'ordinance')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">
+                  <span *ngIf="typeOf(option.ordiance) === 'number'">{{option.ordiance | currency : 'USD' : 'symbol' : '1.0-0'}}</span>
+                  <span *ngIf="typeOf(option.ordiance) === 'string'">{{option.ordiance}}</span>
+                </div>
+
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col">
+                  Waiting Period<br />(No Waiting Period  for new loans)
+                  <i class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'waitingPeriod')}}">info_outline</i>
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage">{{option.waitingPeriod}}</div>
+              </div>
+              <div class="row table-data">
+                <div class="col-4 flex-align first-col" style="height:60px">
+                  Payment Options
+                </div>
+                <div class="col other-col" *ngFor="let option of coverage" style="height:60px">
+                  <span *ngIf="option.companyName!='Zurich'">Full payment required</span>
+                  <span *ngIf="option.companyName=='Zurich'">
+                  <button class="btn btn-danger" style="font-size: 13px; padding: 5px;" (click)="openPaymentOptionsModal()">View payment options</button>
+                  </span>
+
+                </div>
+
+              </div>
+            </div>
+          </section>
+          <div class="disclaimer-title">About Your Quote</div>
+          <div class="disclaimer">
+            This quotation is based on information supplied by you. Please review the quote inputs for accuracy. This non-binding quotation is not an offer of or a contract for insurance. Price and terms associated with this quote are subject to underwriting review
+            and may change. This quote may be withdrawn for any reason prior to the submission of premium in full and a completed, signed application for insurance. Please refer to the insurance policy for complete coverages, terms, conditions
+            and exclusions. National    Insurance Program (NFIP)    insurance policies may only be cancelled for reasons allowed under the program – check their website for specific details. The amount of coverage available may be less
+            than the replacement cost of your building and personal property, and you may need to procure additional amounts of insurance from other sources.
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+  </ng-template>
+
+  <!-- save quote -->
+  <ng-template #template>
+    <app-modal [processId]="processInstance.process_instance_id" [quoteType]="'displayQuote'" (isQuoteSaved)=isQuoteSaved($event) [modalRef]="modalRef"></app-modal>
+  </ng-template>
+
+  <!-- Modal to display options for current renter -->
+  <ng-template #interestQsModal>
+    <div class="modal-header modal-header-custom">
+      <!-- if renter -->
+      <div *ngIf="renterMsg" class="modal-title pull-left">
+        You previously told us you are a “Current Renter” (see below). You will not be able to purchase a    policy with building coverage for this property unless you are a Current Owner or have a Purchase Pending. You may purchase a personal property / contents
+        only policy if you are a Current Renter.
+        <br /> <br /> Please make the appropriate selection below and click "Continue"
+      </div>
+      <!-- if just looking -->
+      <div *ngIf="justLookingMsg" class="modal-title pull-left">
+        You previously told us you are "Just Looking" (see below). You will not be able to purchase a    policy with building coverage for this property unless you are a Current Owner or have a Purchase Pending. You may purchase a personal property / contents
+        only policy if you are a Current Renter.
+        <br /> <br /> Please make the appropriate selection below and click "Continue"
+      </div>
+
+      <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body old-modal">
+
+      <div class="row cust-row" btnRadioGroup [(ngModel)]="interest" (ngModelChange)="validateChoice()">
+        <div class="cust-col cust-pad">
+          <label btnRadio="Current Owner" class="btn btn-outline mobile-buttons" tabindex="0" role="button">Current Owner</label>
+        </div>
+        <div class="cust-col cust-pad">
+          <label btnRadio="Current Renter" class="btn btn-outline mobile-buttons" tabindex="0" role="button">Current Renter</label>
+        </div>
+        <div class="cust-col cust-pad">
+          <label btnRadio="Purchase Pending" class="btn btn-outline mobile-buttons" tabindex="0" role="button">Purchase Pending</label>
+        </div>
+        <div class="cust-col cust-pad">
+          <label btnRadio="Just Looking" class="btn btn-outline mobile-buttons" tabindex="0" role="button">Just Looking</label>
+        </div>
+      </div>
+    </div>
+    <div class="text-danger text-center mb-2" *ngIf="showError">Please select appropriate option. </div>
+    <div class="row pb-3">
+      <div class="col text-center">
+        <button [disabled]="!isValidInterest" type="submit" class="btn btn-danger next-button-size mb-4" (click)="submitInterest()">Continue</button>
+      </div>
+    </div>
+  </ng-template>
+
+
+  <ng-template #ECLinkModal>
+    <div class="m-2">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span class="pull-right close-btn-padding" aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="row">
+      <div class="modal-body set-modal ec_modal">
+        We are providing this link as a convenience and for informational purposes; it does not constitute any warranty or endorsement for the products or services offered
+        <br /><br />
+        <a href="https://www.massivecert.com/nationalEC" target="_blank" class="btn btn-danger next-button-size mb-4" (click)="addGAEventMS()">Proceed</a>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #ECPopupModal>
+    <div class="modal-header">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="ecQuestions.sc1">
+        <p>
+          In order to receive an NFIP quote, you need an Elevation Certificate based on Finished Construction.
+          Please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.
+          <br> Your Quote Number is  <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span>
+        </p>
+      </div>
+
+      <div class="text-center">
+        <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #PaymentOptionsModal>
+    <div class="modal-header">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body paymentOptions">
+      <div class="container-fluid">
+       <div class="row pb-3">
+         <div class="col-12"><div class="p-2" style="background-color: #3c3b6e;color:white">PAYMENT OPTIONS</div></div>
+       </div>
+        <div class="row ">
+          <div class="col-sm-4 mb-3 col-xs-12">
+            <div style="border: 1px solid lightgray;">
+              <div style="background-color: #dedbef;font-size: 14px;">
+                <div class="text-center header font-weight-bold">Paid in Full</div>
+              </div>
+              <div class="text-center body" style="line-height:110px">
+
+                <span>$&nbsp;</span>
+                <span style="font-size: 30px;font-weight: bold;">{{zurichData[0]?.totalDownpaymentAmount | number:'1.2-2':'en-US'}}</span>
+                <span style="position: absolute;margin-top: -3px;">*</span>
+
+              </div>
+              <div class="container">
+                <div class="row">
+                  <div class="col-12 rowStyle">
+                    {{zurichData[0]?.totalDownpaymentDescription}}
+                  </div>
+                  <!--<div class="col-7 rowStyle bb">
+    **Fees Included of
+  </div>
+  <div class="col-5 rowStyle bb" style="text-align:right;font-weight: bold;">$&nbsp;{{zurichData[0]?.installmentFees | number : '1.2-2':'en-US'}}
+  </div>-->
+                  <div class="col-12 rowStyle bb"></div>
+
+                  <div class="col-7 rowStyle "></div>
+                  <div class="col-5 rowStyle " style="text-align:right;font-weight: bold;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4 mb-3  col-xs-12">
+            <div style="border: 1px solid lightgray;">
+              <div style="background-color: #dedbef;font-size: 14px;">
+                <div class="text-center header font-weight-bold">Down Payment + 1 Installment</div>
+              </div>
+              <div class="text-center body" style="line-height: 40px;" >
+                <div>Down Payment</div>
+                <div>
+                  <span>$&nbsp;</span>
+                  <span style="font-size: 30px;font-weight: bold;">{{zurichData[1]?.totalDownpaymentAmount | number : '1.2-2':'en-US'}}</span>
+                  <span style="position: absolute;margin-top: -3px;">*</span>
+                </div>
+              </div>
+
+              <div class="container">
+                <div class="row">
+                  <div class="col-12 rowStyle bb">Remaining Installment</div>
+
+                  <div class="col-7 rowStyle bb">Installment Amount</div>
+                  <div class="col-5 rowStyle bb" style="text-align:right;font-weight: bold;">$&nbsp;{{zurichData[1]?.totalFirstInstallmentAmount | number : '1.2-2':'en-US'}}</div>
+
+
+                  <div class="col-12 rowStyle">
+                    {{zurichData[1]?.totalDownpaymentDescription}}
+                  </div>
+                  <!--<div class="col-7 rowStyle ">
+    **Fees Included in Down Payment
+  </div>
+  <div class="col-5 rowStyle " style="text-align:right;font-weight: bold;">$&nbsp;{{zurichData[1]?.installmentFees | number : '1.2-2':'en-US'}}
+  </div>-->
+
+                </div>
+              </div>
+             
+            </div>
+         
+           
+          </div>
+          <div class="col-sm-4 mb-3  col-xs-12">
+            <div style="border: 1px solid lightgray;">
+              <div style="background-color: #dedbef;font-size: 14px;">
+                <div class="text-center header font-weight-bold">Down Payment + 3 Installments</div>
+              </div>
+              <div class="text-center body" style="line-height: 40px;">
+                <div>Down Payment</div>
+                <div>
+                  <span>$&nbsp;</span>
+                  <span style="font-size: 30px;font-weight: bold;">{{zurichData[2]?.totalDownpaymentAmount | number : '1.2-2':'en-US'}}</span>
+                  <span style="position: absolute;margin-top: -3px;">*</span>
+                </div>
+              </div>
+
+              <div class="container">
+                <div class="row">
+                  <div class="col-12 rowStyle bb">Remaining Three Installments</div>
+
+                  <div class="col-7 rowStyle bb">Installment Amount</div>
+                  <div class="col-5 rowStyle bb" style="text-align:right;font-weight: bold;">$&nbsp;{{zurichData[2]?.totalFirstInstallmentAmount | number : '1.2-2':'en-US'}}</div>
+
+                  <div class="col-12 rowStyle">
+                    {{zurichData[2]?.totalDownpaymentDescription}}
+                  </div>
+                  <!--<div class="col-7 rowStyle ">
+                    **Fees Included in Down Payment
+                  </div>
+                  <div class="col-5 rowStyle " style="text-align:right;font-weight: bold;">$&nbsp;{{zurichData[2]?.installmentFees | number : '1.2-2':'en-US'
+                    }}
+                  </div>-->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <!--<button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>-->
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #ECExpiryModal>
+    <div class="ec-expiry-msg">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <br />
+      <p *ngIf="ecExpiryPopUp && (isQualifiedBuyer || isValidInterest)">
+        Due to the Expiration date of this Elevation Certificate, we are unable to provide a quote for this property. Please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST
+        <br> Your Quote Number is <span style="color:red;font-weight:bold">{{processInstance.identifier.quote_id}}</span>
+      </p>
+      <p *ngIf="ecExpiryPopUp && (!isQualifiedBuyer && !isValidInterest)">
+        Due to the Expiration date of this Elevation Certificate, we are unable to provide an NFIP quote for this property, you will need to contact an agent in your community to get a    quote
+      </p>
+      <div class="text-center" *ngIf="(isQualifiedBuyer || isValidInterest)">
+        <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #ViewMoreModal>
+    <div class="container view-more-mobile">
+      <div class="row">
+        <div class="header col-12">
+          {{selectedCoverage.underwrittenBy}}
+          <img src="assets/images/Close_Icon_Circle-512.png" class="close-view-details" (click)="closeModal()" />
+        </div>
+
+      </div>
+
+      <div class="body">
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Building Coverage
+            <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'buildingCoverage')}}">info_outline</i>
+          </div>
+          <div class="col view-more-mobile-body-col-right">{{selectedCoverage.buildingCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+
+        </div>
+        <div *ngIf="selectedCoverage.companyName==='NFIP'" class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Building Deductible
+            <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'buildingDeductible')}}">info_outline</i>
+          </div>
+          <div class="col view-more-mobile-body-col-right" *ngIf="selectedCoverage.buildingCoverage">
+            <span *ngIf="typeOf(selectedCoverage.buildingDeductible) === 'string'">{{selectedCoverage.buildingDeductible}}</span>
+            <span *ngIf="typeOf(selectedCoverage.buildingDeductible) === 'number'">{{selectedCoverage.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+          </div>
+          <div class="col view-more-mobile-body-col-right" *ngIf="!selectedCoverage.buildingCoverage">N/A</div>
+
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Personal Property <span class="d-inline-block">
+              Coverage
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'personalPropertyCoverage')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">
+            {{selectedCoverage.contentsCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}
+          </div>
+        </div>
+        <div *ngIf="selectedCoverage.companyName==='NFIP'" class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Personal Property <span class="d-inline-block">
+              Deductible
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'personalPropertyDeductible')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">
+            <span *ngIf="typeOf(selectedCoverage.contentsDeductible) === 'string'">{{selectedCoverage.contentsDeductible}}</span>
+            <span *ngIf="typeOf(selectedCoverage.contentsDeductible) === 'number'">{{selectedCoverage.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+          </div>
+        </div>
+        <div *ngIf="selectedCoverage.companyName!=='NFIP'" class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Deductible
+            <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'deductible')}}">info_outline</i>
+          </div>
+          <div class="col view-more-mobile-body-col-right">{{selectedCoverage.contentsDeductible | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+        </div>
+        <div class="row" *ngIf="selectedCoverage.buildingCoverage">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Building Loss <span class="d-inline-block">
+              Settlement
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'buildingLossSettlement')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">{{selectedCoverage.buildingLossSettlement}}</div>
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Personal Property Loss <span class="d-inline-block">
+              Settlement
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'personalPropertyLossSettlement')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">{{selectedCoverage.personlPropertyLossSettlement}}</div>
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Other Structures <span class="d-inline-block">
+              Coverage
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'otherStructuresCoverage')}}">info_outline</i>
+            </span>
+          </div>
+          <div *ngIf="typeOf(selectedCoverage.otherStructures) === 'string'" class="col view-more-mobile-body-col-right">{{selectedCoverage.otherStructures}}</div>
+          <div *ngIf="typeOf(selectedCoverage.otherStructures) === 'number'" class="col view-more-mobile-body-col-right"><span *ngIf="selectedCoverage.companyName==='NFIP'">Unfinished Detached Garage Only: </span>{{selectedCoverage.otherStructures | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Additional Living <span class="d-inline-block">
+              Expense
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'additionalLivingExpense')}}">info_outline</i>
+            </span>
+          </div>
+          <div *ngIf="typeOf(selectedCoverage.livingExpense) === 'string'" class="col view-more-mobile-body-col-right">{{selectedCoverage.livingExpense}}</div>
+          <div *ngIf="typeOf(selectedCoverage.livingExpense) === 'number'" class="col view-more-mobile-body-col-right">{{selectedCoverage.livingExpense | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Ordiance or Law <span class="d-inline-block">
+              (ICC)
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'ordinance')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">
+            <span *ngIf="typeOf(selectedCoverage.ordiance) === 'string'">{{selectedCoverage.ordiance}}</span>
+            <span *ngIf="typeOf(selectedCoverage.ordiance) === 'number'">{{selectedCoverage.ordiance | currency : 'USD' : 'symbol' : '1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Waiting Period (No Waiting Period  for new <span class="d-inline-block">
+              loans)
+              <i class="material-icons text-muted view-more-help" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{getHelpText(selectedCoverage.helpText,'waitingPeriod')}}">info_outline</i>
+            </span>
+          </div>
+          <div class="col view-more-mobile-body-col-right">{{selectedCoverage.waitingPeriod}}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-7 view-more-mobile-body-col-left">
+            Payment Options
+          </div>
+          <div class="col view-more-mobile-body-col-right">
+            <span *ngIf="selectedCoverage.companyName!='Zurich'">Full payment required</span>
+            <span *ngIf="selectedCoverage.companyName=='Zurich'">
+              
+              <button class="btn btn-danger" style="font-size: 13px; padding: 5px;" (click)="openPaymentOptionsModal()">View payment options</button>
+            </span>
+          </div>
+        </div>
+
+        
+
+
+
+      </div>
+
+    </div>
+  </ng-template>
+
+
+  <ng-template #comparisonTableMobile>
+    <div *ngIf="coverage && coverage.length>1">
+      <div class="">
+        <div class="row no-gutters fixed-top compare-mobile-headers ">
+          <div id="comparison header" class="col-4 pl-2 align-vcenter">
+            <img src="assets/images/filter_icon.png" style="width: 25px;" (click)="openFilters()" />
+            <span class="pl-2" (click)="openFilters()">Filter</span>
+          </div>
+          <div id="comparison header" *ngIf="animationState=='in'" [@inOutAnimation] class="col-8 p-0 pl-4 pr-4 align-vcenter" style="justify-content: flex-end;">
+            <span (click)="applyFilters()" style="color:#b22234">Apply</span>
+          </div>
+          <div id="comparison header" *ngIf="animationState=='out' && noOfPages.length>1" [@inOutAnimation] class="col-8 p-0 align-vcenter" style="justify-content:flex-end">
+            <img src="assets/images/Previous.png" style="height: 20px;" class="back mr-2" (click)="moveIndex('b')">
+            <span class="mr-2" (click)="moveIndex('b')">Previous</span>
+            <span class="mr-2 " *ngFor="let option of noOfPages; let i = index" [ngClass]="(comTblIndex==i)?'dot':'empty-dot'"></span>
+            <span class="mr-2" (click)="moveIndex('f')">Next</span>
+            <img class="mr-2 back" src="assets/images/Next.png" style="height: 20px;" (click)="moveIndex('f')">
+          </div>
+
+
+        </div>
+        <div [@slideInOut]="animationState" class="row  mobile-filters">
+          <div class="checkbox-position col-12 p-0 pl-2 pr-2" *ngFor="let option of coverage">
+            <input class="option-input checkbox" type="checkbox" [checked]="option.checked" (change)="option.checked = !option.checked">
+            <label class="form-check-label">
+              {{option.companyName}}<span *ngIf="option.companyName!='NFIP'">({{option.insuranceType}})</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <section id="Mobile-Comparision-Table">
+        <div class="compare-mobile mt-1">
+
+          <div class="row headers">
+            <div class="col-5"></div>
+            <div class="col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <div>{{option.insuranceCompanyName? option.insuranceCompanyName : option.companyName}}<span *ngIf="option.companyName!='NFIP' && option.companyName!='Zurich'"><br />({{option.insuranceType}})</span></div>
+            </div>
+
+          </div>
+          <div class="row table-data total-annual-cost">
+            <div class="col-5 first-col tac">
+              Total Annual Cost
+            </div>
+            <div class="col p-0 total-cost-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <div class="total-cost">
+                <span *ngIf="typeOf(option.totalAmount) === 'number'">{{option.totalAmount | currency}}</span>
+                <span *ngIf="typeOf(option.totalAmount) === 'string'">{{option.totalAmount}}</span>
+              </div>
+
+              <div *ngIf="!(this.ecQuestions?.sc1)||option.companyName !='NFIP'">
+                <span *ngIf="!(post_firm_hiscox_only || ecMsgResponse === 'preFirmSlabYesECUnqualified' || ecMsgResponse === 'preFirmSlabYesECQualified') || option.companyName !='NFIP'">
+                  <button type="button" class="btn btn-danger" (click)="buyPolicy(option)">
+                    <span style="font-size:10px;">BUY NOW</span>&nbsp;<img style="height: 15px;" src="https://static-cdn. .com/arrow.png " />
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-10 p-0">Building Coverage</div>
+                <div class="col-2 p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingDeductible')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject">{{option.buildingCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Personal Property Coverage</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyCoverage')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>{{option.contentsCoverage | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+          </div>
+          <div class="Hiscox row table-data">
+            <div class="col-5 sp-col">
+              <div class="row no-gutters h-100">
+                <div class="col-12 first-col">
+                  <div class="row m-0 center-icons">
+                    <div class="col-9 p-0">Building Deductible</div>
+                    <div class="col p-0">
+                      <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingDeductible')}}">info_outline</i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 first-col">
+                  <div class="row m-0 center-icons">
+                    <div class="col-9 p-0">Personal Property Deductible</div>
+                    <div class="col p-0">
+                      <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyDeductible')}}">info_outline</i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col sp-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <div class="row no-gutters h-100" *ngIf="option.companyName==='NFIP'">
+                <div class="col-12 other-col">
+                  <span *ngIf="typeOf(option.buildingDeductible) === 'number'">{{option.buildingDeductible | currency}}</span>
+                  <span *ngIf="typeOf(option.buildingDeductible) === 'string'">{{option.buildingDeductible}}</span>
+                </div>
+                <div class="col-12 other-col">
+                  <span *ngIf="typeOf(option.contentsDeductible) === 'number'">{{option.contentsDeductible | currency}}</span>
+                  <span *ngIf="typeOf(option.contentsDeductible) === 'string'">{{option.contentsDeductible}}</span>
+                </div>
+              </div>
+              <div class="sp-col-double" *ngIf="option.companyName!='NFIP'">
+                Single<br />Deductible:<br />{{option.buildingDeductible | currency : 'USD' : 'symbol' : '1.0-0' }}
+              </div>
+            </div>
+
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Building Loss Settlement</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'buildingLossSettlement')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>{{option.buildingLossSettlement}}</div>
+
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Personal Property Loss Settlement</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'personalPropertyLossSettlement')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>{{option.personlPropertyLossSettlement}}</div>
+          </div>
+
+          <div class="row table-data overflow-height">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Other Structures Coverage</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'otherStructuresCoverage')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <div *ngIf="typeOf(option.otherStructures) === 'string'">{{option.otherStructures}}</div>
+              <div *ngIf="typeOf(option.otherStructures) === 'number'">
+                <span *ngIf="option.companyName==='NFIP'">Unfinished Detached Garage Only: </span>
+                {{option.otherStructures | currency : 'USD' : 'symbol' : '1.0-0'}}
+              </div>
+            </div>
+
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Additional Living Expense</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'additionalLivingExpense')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <div *ngIf="typeOf(option.livingExpense) === 'string'">{{option.livingExpense}}</div>
+              <div *ngIf="typeOf(option.livingExpense) === 'number'">{{option.livingExpense | currency : 'USD' : 'symbol' : '1.0-0'}}</div>
+            </div>
+
+          </div>
+          <div class="row table-data">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0">Ordiance or Law (ICC)</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'ordinance')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <span *ngIf="typeOf(option.ordiance) === 'number'">{{option.ordiance | currency}}</span>
+              <span *ngIf="typeOf(option.ordiance) === 'string'">{{option.ordiance}}</span>
+            </div>
+
+          </div>
+          <div class="row table-data overflow-height">
+            <div class="col-5 first-col">
+              <div class="row m-0 center-icons">
+                <div class="col-9 p-0"> Waiting Period<br />(No Waiting Period  for new loans)</div>
+                <div class="col p-0">
+                  <i class="material-icons text-muted view-more-help" container="body" triggers="mouseenter:mouseleave" popover="{{getHelpText(compTblObject[0].helpText,'ordinance')}}">info_outline</i>
+                </div>
+              </div>
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>{{option.waitingPeriod}}</div>
+          </div>
+
+          <div class="row table-data overflow-height">
+            <div class="col-5 first-col">
+              Payment Options
+            </div>
+            <div class="col other-col" *ngFor="let option of compTblObject" [@inOutAnimation]>
+              <span *ngIf="option.companyName!='Zurich'">Full payment required</span>
+              <span *ngIf="option.companyName=='Zurich'">
+               
+                <button class="btn btn-danger" style="font-size: 13px; padding: 5px;" (click)="openPaymentOptionsModal()">View payment options</button>
+              </span>
+            </div>
+          </div>
+
+          
+
+        </div>
+      </section>
+
+
+    </div>
+  </ng-template>
+
+  <ng-template #massiveCertPopup>
+    <div class="m-2">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()"><span class="pull-right close-btn-padding" aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body body">
+      <div *ngIf="ecMsgResponse === 'postFirmSlabNoECQualified'">
+        <p>In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a href="javascript:;" (click)="modalRef.hide();openMassivecertModal()" color="blue">www.massivecert.com/nationalEC</a><br></p>
+        <p *ngIf="isQualifiedBuyer || isValidInterest">Please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST</p>
+        <p *ngIf="isQualifiedBuyer || isValidInterest">Your Quote No is <span class="quote-id-color font-weight-bold">{{quoteNumber}}</span></p>
+      </div>
+
+      <div *ngIf="ecMsgResponse === 'postFirmECYesQualified'">
+        <p>Due to the complexity of this quote we are unable to automatically provide a quote for this property.</p>
+        <p>An Agent will need to assist you with this quote, please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.</p>
+        <p>Your Quote Number is  <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+      </div>
+      <div *ngIf="ecMsgResponse === 'postFirmECNoQualified'">
+        <p> In order to receive an NFIP quote an Elevation Certificate is required. If you would like more information about ordering an Elevation Certificate, please click here: <a href="javascript:;" (click)="modalRef.hide();openMassivecertModal()" color="blue">www.massivecert.com/nationalEC</a>.</p>
+        <p> If you need assistance, please contact us, at (833) 879-3566 or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.</p>
+        <p>Your Quote Number is  <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+      </div>
+      <div *ngIf="ecMsgResponse === 'postFirmSlabYesECQualified' || ecMsgResponse === 'preFirmSlabYesECQualified'">
+        <p> Due to the Expiration date of this Elevation Certificate, we are unable to provide a quote for this property.</p>
+        <p> Please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.</p>
+        <p>Your Quote Number is <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+      </div>
+      <div *ngIf="ecMsgResponse === 'postFirmECTemplateQualifiedInValidDiagram' || ecMsgResponse === 'preFirmECTemplateQualifiedInValidDiagram'">
+        <div *ngIf="ecQuestions.sc1">
+          <p>
+            In order to receive an NFIP quote, you need an Elevation Certificate based on Finished Construction.
+            Please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.
+            <br> Your Quote Number is  <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span>
+          </p>
+        </div>
+        <div *ngIf="!ecQuestions.sc1">
+          <p>Due to the complexity of this quote we are unable to automatically provide a quote for this property. An Agent will need to assist you with this quote.</p>
+          <p>Please contact us at (833) 879-3566, or by using the chat link below Monday through Friday from 8:00 am to 6:00 pm EST.</p>
+          <p>Your Quote Number is <span class="quote-id-color"><b>{{processInstance.identifier.quote_id}}</b></span></p>
+        </div>
+      </div>
+    </div>
+    <div class="mb-4" *ngIf="isQualifiedBuyer || isValidInterest">
+      <div class="text-center w-100">
+        <button type="button" class="btn btn-danger" (click)="openChat()">Chat with us</button>
+      </div>
+    </div>
+  </ng-template>
+</div> 

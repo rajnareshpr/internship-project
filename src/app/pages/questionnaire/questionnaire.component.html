@@ -1,0 +1,475 @@
+<div class="d-none d-sm-block container-nomargin" *ngIf="!isMobile && !(taskId === 'page_elevation_certificate')" style="background-color: #EEECF9" >
+    <app-header [showBackBtn]='showBackBtn' (goToBackPage)=goToBackPage($event)></app-header>
+    <div *ngIf="formInfo" [ngStyle]="{'width.vw': formInfo.view.progress}" style="border-top: #930E27 8px solid;">
+    </div>
+    <div class="image-header-container"> 
+        <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg" alt="header">
+        <div class="image-header-centered-text">Get Your Quote</div>
+    </div>
+    <div class="container container-size overlay">
+        <div class="container-padding overlay-container" *ngIf="taskId !== 'page_elevation_certificate'">
+            <ng-container *ngTemplateOutlet="pageOptions"></ng-container>
+        </div>
+       
+    </div>
+    <app-footer></app-footer>
+</div>
+
+  <div class="d-block d-sm-none" *ngIf="isMobile && !(taskId === 'page_elevation_certificate')">
+    <div class="fixed-top">
+      <!-- header -->
+      <app-header [showBackBtn]='showBackBtn' (goToBackPage)=goToBackPage($event)></app-header>
+      <div style="background-color:white;">
+        <div *ngIf="formInfo" [ngStyle]="{'width.vw': formInfo.view.progress}" style="border-top: #930E27 8px solid;">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="image-header-container">
+      <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+      <div class="image-header-centered-text">Get Your Quote</div>
+    </div>
+
+    <div class="container xs-Margin-top" *ngIf="taskId !== 'page_elevation_certificate'">
+      <div class="">
+        <ng-container *ngTemplateOutlet="pageOptions"></ng-container>
+      </div>
+    </div>
+    
+  </div>
+
+  <section id="elevation certificates" *ngIf="taskId === 'page_elevation_certificate'">
+    <div [ngClass]="{'container-nomargin':!isMobile}">
+      <div *ngIf="!isMobile">
+        <app-header [showBackBtn]='showBackBtn' (goToBackPage)=goToBackPage($event)></app-header>
+        <div *ngIf="formInfo" [ngStyle]="{'width.vw': formInfo.view.progress}" style="border-top: #930E27 8px solid;">
+        </div>
+        <div class="image-header-container">
+          <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg" alt="header">
+          <div class="image-header-centered-text">Get Your Quote</div>
+        </div>
+      </div>
+
+      <div *ngIf="isMobile">
+
+        <div class="fixed-top">
+          <!-- header -->
+          <app-header [showBackBtn]='showBackBtn' (goToBackPage)=goToBackPage($event)></app-header>
+          <div style="background-color:white;">
+            <div *ngIf="formInfo" [ngStyle]="{'width.vw': formInfo.view.progress}" style="border-top: #930E27 8px solid;">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="image-header-container">
+          <img class="img-responsive image-header" src="https://static-cdn. .com/header_bg.jpg">
+          <div class="image-header-centered-text">Get Your Quote</div>
+        </div>
+
+      </div>
+      <div [ngClass]="{'container container-size overlay':!isMobile}">
+        <div [ngClass]="{'p-4 mx-auto overlay-container':!isMobile,'container xs-Margin-top':isMobile}">
+          <section *ngIf="!this.showSpinner">
+            <app-ec-type05 *ngIf="isECExpiryBetween('07/31/1999', '12/31/2005') && !this.showProgress" [processInstanceData]="processInstanceData" (ecSubmitEvent)="callTaskApi($event,true)"></app-ec-type05>
+            <app-ec-type09 *ngIf="isECExpiryBetween('01/01/2006', '02/28/2009') && !this.showProgress" [processInstanceData]="processInstanceData" (ecSubmitEvent)="callTaskApi($event,true)"></app-ec-type09>
+            <app-ec-type12 *ngIf="isECExpiryBetween('03/01/2009', '03/31/2012') && !this.showProgress" [processInstanceData]="processInstanceData" (ecSubmitEvent)="callTaskApi($event,true)"></app-ec-type12>
+            <app-ec-type22 *ngIf="isECExpiryBetween('04/01/2012', null) && !this.showProgress" [processInstanceData]="processInstanceData" (ecSubmitEvent)="callTaskApi($event,true)"></app-ec-type22>
+          </section>
+
+          <div *ngIf="showProgress" style="text-align:center;margin-top: 18vh;font-size:22px">
+            We are quoting your    policy now…<br>
+            Please do not refresh the page or click the back button
+            <progress-bar [progress]="apiProgress" [color]="'#488aff'">
+            </progress-bar>
+          </div>
+          <div *ngIf="(showSpinner && !showProgress) " style="text-align:center;margin-top: 21vh;">
+            <span style="font-size:22px">Quote loading…</span>
+            <div class="spinner-border set-position" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <app-footer *ngIf="!isMobile"></app-footer>
+    </div>
+  </section>
+
+  <ng-template #pageOptions>
+    <div *ngIf="!formInfo || (showSpinner && !showProgress) " style="text-align:center;margin-top: 21vh;">
+      <span *ngIf="formInfo && formInfo['view']['submit']['text']['en'] == 'VIEW QUOTE'" style="font-size:22px">Quote loading…</span>
+      <div class="spinner-border set-position" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+    <div *ngIf="showProgress" style="text-align:center;margin-top: 18vh;font-size:22px">
+      We are quoting your    policy now…<br>
+      Please do not refresh the page or click the back button
+      <progress-bar [progress]="apiProgress" [color]="'#488aff'">
+      </progress-bar>
+    </div>
+    <div *ngIf="formInfo && !showSpinner">
+      <div *ngIf="questionSet?.length && questions">
+        <form [formGroup]="questions" (ngSubmit)="getNextTask()">
+          <div *ngFor="let form_elem of questionSet">
+            <div [ngSwitch]="form_elem.question_type" *ngIf="questions.get(form_elem.question_id)">
+              <!-- Address -->
+              <section id="Address">
+                <div *ngSwitchCase="'address'" class="form-group" [attr.id]="form_elem.question_id">
+                  <label for="{{form_elem.question_id}}">{{form_elem.title.en}}</label>
+                  <input class="form-control input-field" type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" formControlName="{{form_elem.question_id}}" id="{{form_elem.question_id}}" placeholder="{{form_elem.placeholder}}" />
+                </div>
+              </section>
+              <!-- Number -->
+              <section id="Number">
+                <div *ngSwitchCase="'number'" class="">
+                  <label for="{{form_elem.question_id}}" class="pb-3">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i class="fa fa-asterisk required"></i>
+                    </span>
+                  </label>
+
+                  <div class="row pr-0 pr-sm-3 pl-sm-3 pl-0 mb-3 " [attr.id]="form_elem.question_id">
+                    <div class="input-group col-lg-3 col-md-3 col-sm-6 col-12">
+                      <input class="form-control" type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" formControlName="{{form_elem.question_id}}" [maxLength]="form_elem.validation.maxLength.value" id="{{form_elem.question_id}}" placeholder="{{form_elem.placeholder}}"
+                             appNumber />
+                      <span *ngIf="form_elem.units ==='sqft'" class='sqftText'>Sq.ft</span>
+                    </div>
+                  </div>
+                  <app-error-message [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                </div>
+              </section>
+              <!-- Text -->
+              <section id="Text">
+                <div *ngSwitchCase="'text'" class="form-group" [attr.id]="form_elem.question_id">
+                  <label for="{{form_elem.question_id}}">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i class="fa fa-asterisk required"></i>
+                    </span>
+                  </label>
+                  <input type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" formControlName="{{form_elem.question_id}}" class="set-form-control" maxlength="30" appFormError>
+                  <app-error-message class="col-12" [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                </div>
+              </section>
+              <!-- Image Choice -->
+              <section id="ImageChoice">
+
+                <div *ngSwitchCase="'image_choice'" class="form-group image-choice">
+                  <label for="{{form_elem.question_id}}" class="p-3">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i class="fa fa-asterisk required"></i>
+                    </span>
+                  </label>
+                  <div class="row" [attr.id]="form_elem.question_id">
+                    <div class="col-lg-4 col-md-4 col-6 pb-3 img-choice-padding" *ngFor="let option of form_elem.options">
+                      <div class="card image-height cursor" (click)="setOption(form_elem, option);" [ngClass]="{'selected': checkImageSelected(option.value, form_elem), 'btn-unselected': questions.get(form_elem.question_id).value && questions.get(form_elem.question_id).value !== option.name}">
+                        <img src="assets/images/help_icon.png" class="image-help" triggers="mouseenter:mouseleave" popover="{{option.description}}">
+                        <img class="card-img-top h-100 center-building-image" [src]="option.url" alt="Card image cap">
+                        <div>
+                          <p class="text-center pb-2 image-btn" [ngClass]="{'active': checkImageSelected(option.value, form_elem), 'img_choice_text': isMobile === true}">{{option.name}}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+              <!-- Images gallery choice -->
+              <section id="ImageGalleryChoice">
+                <div *ngSwitchCase="'image_gallery'" class="form-group" [attr.id]="form_elem.question_id">
+                  <div *ngIf="!form_elem.disabled">
+                    <label for="{{form_elem.question_id}}" class="p-3">
+                      {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                      <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                        {{eSentence(form_elem.title.en)}}<i class="fa fa-asterisk required"></i>
+                      </span>
+                    </label>
+                    <div class="row structure-type">
+                      <div class="col-lg-4 col-md-4 col-6 pb-3" *ngFor="let option of form_elem.options">
+                        <div class="card card-height" (click)="setOption(form_elem, option);" [ngClass]="{'selected': checkImageSelected(option.value, form_elem), 'btn-unselected': questions.get(form_elem.question_id).value && questions.get(form_elem.question_id).value !== option.name }">
+                          <img *ngIf="option.description" src="assets/images/help_icon.png" class="image-help" triggers="mouseenter:mouseleave" popover="{{option.description}}">
+                          <img class="card-img-top" [ngClass]="option.name? 'image-height' : 'crawlspace-image-height'" [src]="option.url" alt="Card image cap">
+                          <div style="line-height:0px">
+                            <p class="text-center mt-4 image-btn" [ngClass]="{'active': checkImageSelected(option.value, form_elem), 'img_gallery_text': isMobile === true}">{{option.name}}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!--Single Choice -->
+              <section id="SingleChoice" *ngIf="!form_elem.disabled">
+                <div *ngSwitchCase="'single_choice'" class="form-group">
+                  <div *ngIf="!form_elem.disabled">
+                    <label class="pb-3">
+                      {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                      <span class="d-inline-block">
+                        {{eSentence(form_elem.title.en)}}<i *ngIf="form_elem.description" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{form_elem.description}}">info_outline</i>
+                        <i class="fa fa-asterisk required" *ngIf="checkRequired(form_elem)"></i>
+                      </span>
+                    </label>
+
+                    <div class="btn-group w-100 flex-wrap" btnRadioGroup formControlName="{{form_elem.question_id}}" (click)="checkSecondaryAction(form_elem.question_id);" [attr.id]="form_elem.question_id">
+                      <div class="pr-0 pr-sm-3 pl-sm-3 pl-0 mobile-buttons" *ngFor="let option of form_elem.options">
+                        <label btnRadio="{{option.value}}" class="btn btn-outline mobile-buttons" tabindex="0" role="button" [ngClass]="{ 'btn-unselected': questions.get(form_elem.question_id).value && questions.get(form_elem.question_id).value !== option.en}">{{option.en}}</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- EC Certificate message -->
+                  <div class="mt-2" *ngIf="form_elem.question_id === 'q_elevation_certificate' && questions.get(form_elem.question_id).value">
+                    <div class="ec-cert-msg-bkg" *ngIf="questions.get(form_elem.question_id).value === 'no'">
+                      <div *ngIf="checkECMsgCondition()">
+                        In order to receive an NFIP quote an Elevation Certificate is required. However, you may be eligible for a Private    quote.
+                      </div>
+                      <div *ngIf="!checkECMsgCondition()">
+                        An Elevation Certificate may help you qualify for a more favorable premium with the National    Insurance Program. If you would like more information about ordering an Elevation Certificate, please click here:
+                        <a data-toggle="modal" data-target="#ECLinkModal" (click)="openModal(ECLinkModal)"><span class="ec_link">www.massivecert.com/nationalEC</span></a>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+              <!-- single radio choice -->
+              <section id="SingleChoiceRadio">
+                <div *ngSwitchCase="'single_choice_radio'" class="form-group">
+                  <div *ngIf="!form_elem.disabled">
+                    <label class="pb-3">
+                      {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                      <span class="d-inline-block">
+                        {{eSentence(form_elem.title.en)}}<i *ngIf="form_elem.description" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{form_elem.description}}">info_outline</i>
+                        <i class="fa fa-asterisk required" *ngIf="checkRequired(form_elem)"></i>
+                      </span>
+                    </label>
+
+                    <div class="btn-group w-100 flex-wrap" [attr.id]="form_elem.question_id">
+                      <div class="radio div-display" *ngFor="let option of form_elem.options">
+                        <input type="radio" [value]="option.value" id="option.en" (change)="checkSecondaryAction(form_elem.question_id);" formControlName="{{form_elem.question_id}}">
+                        <label class="radio-label" [for]="option.en">
+                        </label> <div class="pl-2">{{option.en}}</div>  <i *ngIf="option.helpText" class="material-icons text-muted view-more-help" triggers="mouseenter:mouseleave" popover={{option.helpText}}>info_outline</i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- Year Picker -->
+              <section id="YearPicker" *ngIf="!form_elem.disabled">
+                <div *ngSwitchCase="'year_picker'" class="form-group">
+                  <label class="pb-3" for="{{form_elem.question_id}}">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i class="fa fa-asterisk required"></i>
+                    </span>
+                  </label>
+                  <div class="row pr-0 pr-sm-3 pl-sm-3 pl-0" [attr.id]="form_elem.question_id">
+                    <div class="input-group mb-3 col-lg-3 col-md-5">
+                      <input formControlName="{{form_elem.question_id}}" type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" [typeaheadMinLength]="0" [typeahead]="years" [typeaheadOptionsInScrollableView]="5" [typeaheadScrollable]="true" [typeaheadSelectFirstItem]="true"
+                             placeholder="Year" class="form-control" maxlength="4" appNumber>
+                      <div dropdown class="input-group-append " style="cursor:pointer">
+                        <span class="input-group-text" dropdownToggle>
+                          <i class="fa fa-calendar" aria-hidden="true"></i>
+                        </span>
+                        <!-- year dropdown -->
+                        <ul id="basic-link-dropdown" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="basic-link">
+                          <li *ngFor="let year of years">
+                            <div class="dropdown-item" (click)="setYear(form_elem.question_id, year)">{{year}}</div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- if date entered is before 1700 -->
+                  <div class="text-danger" *ngIf="questions.get(form_elem.question_id).touched
+                       && questions.get(form_elem.question_id).value
+                       && (questions.get(form_elem.question_id).value < 1900 &&
+                            questions.get(form_elem.question_id).value >= 1700)">
+                                    The date entered, while a valid date, is prior to 1900. Please ensure this is correct.</div>
+                  <app-error-message [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                </div>
+              </section>
+              <!-- Slider -->
+              <section id="Slider">
+                <div *ngSwitchCase="'slider'" class="form-group">
+                  <div class="mb-5">{{form_elem.display_text_top}}</div>
+                  <label for="{{form_elem.question_id}}">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}
+                      <i *ngIf="form_elem.description" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{form_elem.description}}">info_outline</i>
+                      <i class="fa fa-asterisk required" *ngIf="checkRequired(form_elem)"></i>
+                    </span>
+                    <span *ngIf="form_elem.show_label" class="d-none d-sm-inline"> &nbsp;&nbsp; :</span>
+                    <span *ngIf="form_elem.show_label" class="d-block d-sm-inline ml-3 value-label">$ {{(questions.get(form_elem.question_id)?.value || 0) | number}}</span>
+                  </label>
+                  <div class="slider-container">
+                    <ng5-slider formControlName="{{form_elem.question_id}}" (userChangeEnd)="checkSecondaryAction(form_elem.question_id)" [options]="form_elem.options"></ng5-slider>
+                  </div>
+                  <div>{{form_elem.display_text_bottom}}</div>
+
+                </div>
+              </section>
+              <!-- Currency -->
+              <section id="Currency">
+                <div *ngSwitchCase="'currency'" class="form-group">
+                  <label for="{{form_elem.question_id}}">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i *ngIf="form_elem.description" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{form_elem.description}}">info_outline</i><i class="fa fa-asterisk required" *ngIf="checkRequired(form_elem)"></i>
+                    </span>
+                  </label>
+                  <div class="col-lg-4 col-md-4 col-sm-6 col-12" [attr.id]="form_elem.question_id">
+                    <div class="input-group input-field">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text input-currency">$</span>
+                      </div>
+                      <input type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" formControlName="{{form_elem.question_id}}" class="form-control currency-input" maxlength="11" appCurrency>
+                    </div>
+                    <app-error-message [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                  </div>
+                </div>
+              </section>
+              <!-- Dropdown -->
+              <section id="Dropdown">
+                <div *ngSwitchCase="'dropdown'" class="form-group">
+                  <div class="mb-5">{{form_elem.display_text_top}}</div>
+                  <label for="{{form_elem.question_id}}" class="mr-3">
+                    <span class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i *ngIf="form_elem.description" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" popover="{{form_elem.description}}">info_outline</i><i class="fa fa-asterisk required" *ngIf="checkRequired(form_elem)"></i>
+                    </span>
+                    &nbsp;&nbsp; <span class="d-none d-sm-inline">:</span>
+                  </label>
+                  <div *ngIf="!(form_elem.disabled && (form_elem.question_id === 'q_contents_deductible'))" class="btn-group" dropdown [isDisabled]="form_elem.disabled">
+                    <div class="input-group" [attr.id]="form_elem.question_id">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text input-currency">$</span>
+                      </div>
+                      <input [readOnly]="true" type="text" [attr.inputmode]="form_elem.type?'decimal':'text'" formControlName="{{form_elem.question_id}}" id="{{form_elem.question_id}}" style="width:10rem" class="form-control currency-input">
+                      <div class="input-group-append dropdownParent" dropdownToggle [ngClass]="{ 'disabled-cursor': form_elem.disabled}" aria-controls="dropdown-animated">
+                        <span class="input-group-text"><i class="fa fa-sort-desc" aria-hidden="true" style="margin-top:-10px"></i></span>
+                      </div>
+                    </div>
+                    <ul *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-animated">
+                      <li *ngFor="let option of form_elem.options" role="menuitem">
+                        <span class="dropdown-item" (click)="dropdownSelect(option,form_elem.question_id)">${{option | number}}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <span class="ml-3 value-label" *ngIf="(form_elem.disabled && (form_elem.question_id === 'q_contents_deductible'))">
+                    N/A
+                  </span>
+                  <div class="mb-5 mt-5">{{form_elem.display_text_bottom}}</div>
+                  <app-error-message [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                </div>
+              </section>
+              <section id="DatePicker" *ngIf="!form_elem.disabled">
+                <div *ngSwitchCase="'date_picker'" class="form-group" [attr.id]="form_elem.question_id">
+                  <label class="pb-3" for="{{form_elem.question_id}}">
+                    {{checkRequired(form_elem)?bSentence(form_elem.title.en):form_elem.title.en}}
+                    <span *ngIf="checkRequired(form_elem)" class="d-inline-block">
+                      {{eSentence(form_elem.title.en)}}<i *ngIf="form_elem.description_image" class="material-icons text-muted help-text" style="margin-left: auto;" triggers="mouseenter:mouseleave" [popover]="ImagePopOver">info_outline</i><i class="fa fa-asterisk required"></i>
+                    </span>
+                  </label>
+                  <div class="input-group mb-3">
+                    <input formControlName="{{form_elem.question_id}}" type="text" id="ECExpiryDate" class="form-control date col-12 col-sm-4" [maxLength]="form_elem.validation.maxLength.value"
+                           #dp="bsDatepicker" bsDatepicker [bsConfig]="{dateInputFormat: 'MM/DD/YYYY', showWeekNumbers: false}" placeholder="Select Date (mm/dd/yyyy)" (bsValueChange)="onValueChange($event, form_elem.question_id)"> <!--(focusout)="onValueChange($event.target.value, form_elem.question_id, 'focusout')" -->
+                    <div class="input-group-append pntr" (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen">
+                      <span class="input-group-text">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <app-error-message [questions]="questions" [formInfo]="form_elem"></app-error-message>
+                </div>
+              </section>
+              <!-- Display -->
+              <div *ngSwitchCase="'display'" class="form-group" [attr.id]="form_elem.question_id">
+                <label for="{{form_elem.question_id}}">{{form_elem.title.en}}: </label>
+                <span>{{form_elem.value}}</span>
+              </div>
+            </div>
+
+          </div>
+          <!-- Building coverage and personal property -->
+          <div class="row mb-5" *ngIf="coverageOptions.hasOwnProperty('contentsCoverage')">
+            <div [ngClass]="coverageOptions.hasOwnProperty('buildingCoverage')?'col-md-6 col-12 mb-5 mb-sm-0':'col'">
+              <div *ngIf="coverageOptions.hasOwnProperty('buildingCoverage')">
+                <div class="col-12 coverage-header ">Building</div>
+                <div class="col-12 coverage-data">
+                  <span class="coverage-label coverage-left-text">Coverage</span>
+                  <span class="pull-right coverage-value">{{coverageOptions['buildingCoverage'] | number}}</span>
+                  <span class="coverage-dollar pull-right">$</span>
+                </div>
+                <div class="col-12 coverage-data">
+                  <span class="coverage-label coverage-left-text">Deductible</span>
+                  <span class="pull-right coverage-value">{{coverageOptions['buildingDeductible'] | number}}</span>
+                  <span class="coverage-dollar pull-right">$</span>
+                </div>
+              </div>
+            </div>
+            <div [ngClass]="coverageOptions.hasOwnProperty('contentsCoverage')?'col-md-6 col-12':'col'">
+              <div *ngIf="coverageOptions.hasOwnProperty('contentsCoverage')">
+                <div class="col-12 coverage-header ">Personal Property</div>
+                <div class="col-12 coverage-data">
+                  <span class="coverage-label coverage-left-text">Coverage</span>
+                  <span class="pull-right coverage-value">{{coverageOptions['contentsCoverage'] | number}}</span>
+                  <span class="coverage-dollar pull-right">$</span>
+                </div>
+                <div class="col-12 coverage-data">
+                  <span class="coverage-label coverage-left-text">Deductible</span>
+                  <span class="pull-right coverage-value">{{coverageOptions['contentsDeductible'] | number}}</span>
+                  <span class="coverage-dollar pull-right">$</span>
+                </div>
+              </div>
+            </div>
+            <div class="col" *ngIf="!coverageOptions.hasOwnProperty('contentsCoverage')||!coverageOptions.hasOwnProperty('buildingCoverage')">
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div *ngFor="let alert of alerts" class="col-12">
+              <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">{{ alert.msg }}</alert>
+            </div>
+            <div *ngIf="formInfo['view']['submit']" class="col text-center" id="submit_button">
+              <button [disabled]="!questions.valid" type="submit" class="btn btn-danger next-button-size mb-4">{{formInfo['view']['submit']['text']['en']}}</button>
+              <a *ngIf="!userEmail && taskId !== 'qs_type_of_building'" data-toggle="modal" data-target="#myModal" (click)="openModal(saveQuoteModal)" class="center-a save-quote btn-block save-link">SAVE MY QUOTE</a><br>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="!questionSet || !questionSet.length">
+
+        <div>{{formInfo['message']}}</div>
+      </div>
+    </div>
+
+    <!-- The Save quote Modal -->
+    <ng-template #saveQuoteModal>
+      <app-modal [processId]="processId" [quoteType]="quoteType" [modalRef]="modalRef" (isQuoteSaved)=isQuoteSaved($event)></app-modal>
+    </ng-template>
+
+    <ng-template #ECLinkModal>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span class="pull-right close-btn-padding" aria-hidden="true">&times;</span>
+      </button>
+      <div class="row">
+        <div class="modal-body set-modal ec_modal">
+          We are providing this link as a convenience and for informational purposes; it does not constitute any warranty or endorsement for the products or services offered
+          <br /><br />
+          <a href="https://www.massivecert.com/nationalEC" target="_blank" class="btn btn-danger next-button-size mb-4" (click)="addGAEventMS()">Proceed</a>
+        </div>
+      </div>
+    </ng-template>
+  </ng-template>
+
+
+  <ng-template #ImagePopOver>
+    <img src="assets/images/elevation_certificate.png" alt="popover image" class="w-100">
+  </ng-template>

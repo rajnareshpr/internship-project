@@ -1,0 +1,48 @@
+@import '../../../CommonStyles_A.scss';
+@import '../../../styles.scss';
+.retrieve-quote {
+    .tab-content {
+        margin: 30px;
+    }
+}
+@media screen and (max-width:375px){
+  ::ng-deep .nav-item > a {
+    font-size: 12px;
+  }  
+}
+.margin-top{
+    margin-top:15px; 
+}
+::ng-deep {
+  .nav-tabs .nav-link {
+    border: 0;
+    border-bottom: 1px solid grey;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    padding-bottom: 10px;
+  }
+
+  .nav-item > a {
+    color: black;
+    font-weight: bold;
+  }
+
+  .nav-tabs {
+    border-bottom: 0;
+  }
+
+  .nav-tabs .nav-link:hover {
+    border-bottom: 1px solid grey;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #af0117;
+    background-color: #fff;
+    border-bottom: 3px solid #af0117;
+    padding-bottom: 8px;
+  }
+}
+.error-message{
+  text-align: center;
+  color: #B22234;
+}

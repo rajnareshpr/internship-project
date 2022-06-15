@@ -1,0 +1,397 @@
+.cover {
+    background-size: cover;
+    height: auto;
+    border-radius: 0;
+    width: 100%;
+    color: #fff;
+    padding-top: 1rem;
+}
+
+
+/* Container holding the image and the text */
+
+.image-header-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+
+/* Centered text */
+
+.image-header-centered-text {
+    position: absolute;
+    top: 41%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+}
+
+.image-height {
+    height: 250px;
+}
+
+.form-group {
+    //margin-bottom: 2rem;
+}
+
+.cover1-background {
+    background: #2b2d34 url(https://static-cdn. .com/hero_section-min.jpg) center;
+    min-height: min-content;
+}
+
+.overlay {
+    margin-top: -50px;
+}
+
+@media only screen and (max-width: 575px) {
+    .mobile-buttons {
+        width: 100% !important;
+    }
+    .image-header {
+        height: 55px!important;
+    }
+  .image-header-container{
+      margin-top:74px;
+  }
+  .image-header-centered-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px !important;
+  }
+}
+
+.xs-Margin-top {
+    margin-top: 15px;
+}
+
+.image-header {
+    height: 250px;
+    width: 100%;
+    border-bottom: #930E27 5px solid;
+}
+
+@media only screen and (min-width:992px) {
+    .container-size {
+        max-width: 815px;
+        min-width: 815px;
+    }
+}
+
+.coverage-header {
+    text-align: center;
+    background-color: #3b3c6e;
+    color: white;
+    font-size: 20px;
+    border: 1px solid #d0d0d6;
+    padding: 10px;
+}
+
+.coverage-label {
+    vertical-align: middle;
+    line-height: 2.5;
+}
+
+.coverage-data {
+    padding: 8px;
+    display: table;
+    background-color: #edecf8;
+    border-bottom: 1px solid #d0d0d6;
+    border-left: 1px solid #d0d0d6;
+    border-right: 1px solid #d0d0d6;
+    font-weight: bold;
+}
+
+.coverage-value {
+    color: #b22234;
+    font-size: 30px;
+    font-weight: bolder;
+    padding-top: 5px;
+}
+
+.coverage-dollar {
+    color: #3b3c6e;
+    font-size: 30px;
+    margin-right: 5px;
+    padding-top: 5px;
+}
+
+.coverage-left-text {
+    font-size: 22px;
+    padding: 6px;
+}
+
+
+
+.btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0);
+}
+
+.btn-outline {
+    color: black;
+    background-color: #ffffff;
+    border-color: #D1D1D1;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    border-width: 2px;
+}
+
+
+/*.btn-outline {
+  color: black;
+  background-color: #ffffff;
+  border-color: #4fbfa8;
+  font-weight: bold;
+  border-radius: 0;
+}*/
+
+.btn-outline:hover,
+.btn-outline:active,
+.btn-outline:focus,
+.btn-outline.active {
+    color: #b22234;
+    border-color: #5c5aac;
+}
+
+.image-btn:hover,
+.image-btn:active,
+.image-btn:focus,
+.image-btn.active {
+    color: #b22234;
+    border-color: #5c5aac;
+}
+
+.image-btn {
+    font-family: 'Avenir Black';
+}
+
+.center-building-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.container-nomargin {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    min-height: 100vh;
+}
+
+.overlay-container {
+    background-color: white;
+    position: relative;
+    box-shadow: 0 5px 5px 1px #0808081c;
+    min-height: 55.8vh;
+}
+
+
+/*.required:after {
+  content: "*";
+  color: red
+}*/
+
+.required {
+    position: absolute;
+    display: inline-block;
+    color: #f11e3c;
+    font-size: 12px;
+    padding-left: 2px;
+}
+
+.btn-outline-secondary {
+    color: #130101;
+    font-weight: 500;
+    border-color: #D0CFD4;
+}
+
+.input-group-text {
+    background-color: #B42035;
+    color: white;
+    border: 1px solid #B42035;
+}
+
+.input-currency {
+    background-color: white;
+    color: #495057;
+    border: 1px solid #ced4da;
+    border-right: none;
+}
+
+.currency-input {
+    border-left: none;
+}
+
+.currency-input {
+    border-left: none;
+}
+
+.input-group-text-trans {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: .375rem .75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef00;
+    border: 1px solid #ced4da;
+    border-right: transparent;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+}
+
+.selected {
+    border: 2.4px solid #5c5aac !important;
+}
+
+.cursor {
+    cursor: pointer;
+    padding: 4px;
+}
+
+.next-button-size {
+    width: 150px;
+}
+
+
+/*Slider*/
+.slider-container {
+  margin-right: 90px;
+  margin-left: 30px;
+  margin-bottom: 50px;
+  margin-top: 4px;
+}
+:host ::ng-deep  {
+    .ng5-slider .ng5-slider-pointer:after {
+        content: '';
+        width: 14px !important;
+        height: 14px !important;
+        position: absolute;
+        top: 5px !important;
+        left: 5px !important;
+        border-radius: 8px !important;
+        background: #C60425 !important;
+    }
+    .ng5-slider .ng5-slider-pointer {
+        cursor: pointer;
+        width: 30px !important;
+        height: 30px !important;
+        top: -12px !important;
+        background-color: #ffffff !important;
+        z-index: 3;
+        border-radius: 16px !important;
+        border: 3px solid #c60425 !important;
+    }
+    .ng5-slider-floor {
+        left: -31px !important;
+        top: -13px !important;
+        font-size: 20px !important;
+    }
+    .ng5-slider-ceil {
+        left: calc(100% + 10px) !important;
+        top: -13px !important;
+        font-size: 20px !important;
+    }
+    .ng5-slider-selection-bar {
+        visibility: initial !important;
+    }
+    .ng5-slider-selection {
+        background: #5c5aac !important;
+    }
+    .ng5-slider-bar {
+        height: 6px !important;
+    }
+    // popover-container {
+    .popover-content {
+        color: white
+    }
+    // }
+}
+
+
+/* Chrome, Safari, Edge, Opera */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* Firefox */
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.text-input {
+    width: 70%;
+}
+
+.sqftText {
+    margin: 10px;
+}
+
+.save-link {
+    color: #D53545 !important;
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+
+.set-form-control {
+    width: 30%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    margin-left: 10px;
+}
+
+.set-form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.set-position {
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: visible;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.confirm-message {
+    text-align: center;
+    color: green;
+    text-decoration: bold;
+}
+
+.disabled-cursor {
+    cursor: auto !important;
+}
